@@ -1164,7 +1164,6 @@ function viewHome(ctx){
     lede += '. ' + bits.join('، ') + '.';
   }
   const todo = ctx.todo.urgent.concat(ctx.todo.soon);
-  const recent = S.data.activity.slice().sort((a,b) => (b.at||0) - (a.at||0)).slice(0, 7);
   return `
   <div class="hello anim"><div><p class="eyebrow">${esc(dfWeek.format(new Date()))}</p><h1>${greet}، ${esc(m.name)}</h1><p class="lede">${esc(lede)}</p></div></div>
   <section class="panel fleet anim" aria-label="ملخص الأسطول">
@@ -1176,15 +1175,11 @@ function viewHome(ctx){
     </div>
     <div class="lot">${ctx.buses.map(b => `<a href="#bus-${esc(b.id)}" class="bay l-${ctx.info[b.id].level}" title="${esc(b.name)} — ${LEVEL[ctx.info[b.id].level]}"><i class="lamp"></i><span class="n tnum">${esc(b.code || '🚍')}</span><span class="nm">${esc(b.name)}</span></a>`).join('')}</div>
   </section>
-  <div class="duo sec">
+  <div class="sec">
     <section class="anim">
       <div class="sec-h"><h2>ماذا علينا الآن؟</h2><a href="#tasks">كل المهام</a></div>
       <div class="panel todo">${todo.length ? todo.slice(0, 6).map(x => todoRow(ctx, x)).join('') + (todo.length > 6 ? `<div class="todo-item"><a class="link" href="#tasks">و ${todo.length - 6} غيرها…</a></div>` : '')
         : `<div class="todo-ok"><span class="emoji" aria-hidden="true">👌</span><div><b>ما فيه شي مستعجل اليوم.</b><div class="small muted">كل الباصات ماشية على مواعيدها.</div></div></div>`}</div>
-    </section>
-    <section class="anim">
-      <div class="sec-h"><h2>آخر ما صار</h2><a href="#log">السجل الكامل</a></div>
-      <div class="panel box">${recent.length ? `<ul class="tl">${recent.map(a => actItem(ctx, a, true)).join('')}</ul>` : empty('ما فيه نشاط للحين', 'أول عملية تسجلها بتظهر هنا.')}</div>
     </section>
   </div>
   <section class="sec">
