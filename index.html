@@ -444,6 +444,9 @@ textarea.inp{min-height:84px;resize:vertical;line-height:1.6}
 select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;padding-left:32px}
 .inp.bad{border-color:var(--bad)}
 .err{font-size:var(--fs-xs);color:var(--bad)}
+.pin-in{letter-spacing:6px;font-size:20px;font-weight:600;text-align:center}
+.pin-big{font-size:28px;min-height:56px;letter-spacing:10px}
+.pin-show{font-size:44px;font-weight:700;letter-spacing:12px;padding:10px 18px;border:2px dashed var(--line);border-radius:12px;background:var(--surface)}
 .km-hint{display:flex;gap:8px;align-items:flex-start;font-size:var(--fs-sm);color:var(--ink-2);background:var(--accent-soft);border-radius:8px;padding:9px 12px;margin:-4px 0 0}
 .km-hint svg{width:18px;height:18px;color:var(--accent);margin-top:2px}
 .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -1021,7 +1024,9 @@ function render(){
   if (S.mode === 'loading' || !S.booted) return;
   const ctx = getD();
   const meM = ctx.memberById[S.me];
-  if (!meM || meM.archived){ showLogin(ctx); return; }
+  if (!meM || meM.archived || (meM.pinHash && meM.pinHash !== S.meH)){ if (S.me && meM && meM.pinHash !== S.meH){ S.me = null; lsSet(LS_ME, null); } showLogin(ctx); return; }
+  $('#login').dataset.mode = '';
+  if (!meM.pinHash && !S.pinPrompted){ S.pinPrompted = true; setTimeout(openMyPin, 400); }
   $('#boot').hidden = true; $('#login').hidden = true; $('#shell').hidden = false;
   const r = route();
   const key = r.name + ':' + (r.id || '');
@@ -1050,7 +1055,7 @@ function renderChrome(ctx, r){
   $('#side-nav').innerHTML = nav.map(n => `<a href="#${n[0]}" class="${active === n[0] ? 'on' : ''}" ${active === n[0] ? 'aria-current="page"' : ''}>${icon(n[1])}<span>${n[2]}</span>${n[3] ? `<span class="cnt">${n[3]}</span>` : ''}</a>`).join('');
   const m = ctx.memberById[S.me];
   $('#side-foot').innerHTML = `<nav class="nav"><a href="#settings" class="${active === 'settings' ? 'on' : ''}">${icon('settings')}<span>الإعدادات</span></a></nav>
-    <button class="me-chip" data-act="switch-user" type="button" title="تبديل المستخدم">${avatar(ctx, S.me, 'sm')}<span><span>${esc(m.name)}</span><small>${ROLES[m.role] || ''} · تبديل</small></span></button>`;
+    <button class="me-chip" data-act="switch-user" type="button" title="تسجيل خروج">${avatar(ctx, S.me, 'sm')}<span><span>${esc(m.name)}</span><small>${ROLES[m.role] || ''} · خروج</small></span></button>`;
   const moreOn = ['maint','issues','log','stats','settings'].includes(active);
   $('#bnav').innerHTML = `
     <a href="#home" class="${active === 'home' ? 'on' : ''}">${icon('home')}<span>الرئيسية</span></a>
@@ -1489,7 +1494,7 @@ function viewSettings(ctx){
       <section class="panel anim">
         <div class="box-h"><h2>حسابي</h2></div>
         <div class="set-row">${avatar(ctx, S.me, 'lg')}<div class="tx"><div class="t">${esc(m.name)}</div><div class="s">${ROLES[m.role] || ''} · ${opsOf(m.id)} عملية مسجلة</div></div>
-          <button class="btn sm" type="button" data-act="switch-user">${icon('exit')}تبديل المستخدم</button></div>
+          <button class="btn sm" type="button" data-act="switch-user">${icon('exit')}تسجيل خروج</button></div>
         <div class="set-row"><div class="tx"><div class="t">حفظ البيانات</div><div class="s">البيانات مشتركة بين الفريق ومحفوظة تلقائيًا، وأي تعديل يظهر للكل مباشرة. ولو ضعف النت عند الباص، يحفظ ويرسل أول ما يرجع الاتصال.</div></div></div>
         <div class="set-row"><div class="tx"><div class="t">الخروج من الفريق</div><div class="s">على هذا الجهاز فقط.</div></div><button class="btn sm ghost" type="button" data-act="leave-team">${icon('exit')}خروج</button></div>
       </section>
@@ -1504,7 +1509,7 @@ function viewSettings(ctx){
       </section>
       <section class="panel anim">
         <div class="box-h"><h2>الفريق</h2>${sup ? `<button class="btn sm" type="button" data-act="add-member">${icon('plus')}عضو</button>` : ''}</div>
-        ${ctx.members.map(x => `<div class="set-row">${avatar(ctx, x.id)}<div class="tx"><div class="t">${esc(x.name)}${x.id === S.me ? ' <span class="muted xs">(أنت)</span>' : ''}</div><div class="s">${ROLES[x.role] || ''} · ${opsOf(x.id)} عملية</div></div>
+        ${ctx.members.map(x => `<div class="set-row">${avatar(ctx, x.id)}<div class="tx"><div class="t">${esc(x.name)}${x.id === S.me ? ' <span class="muted xs">(أنت)</span>' : ''}</div><div class="s">${ROLES[x.role] || ''} · ${opsOf(x.id)} عملية${x.pinHash ? '' : ' · <span style="color:var(--warn)">بدون رقم دخول</span>'}</div></div>
           ${sup || x.id === S.me ? `<button class="icon-btn" type="button" data-act="edit-member" data-id="${esc(x.id)}" aria-label="تعديل ${esc(x.name)}">${icon('edit')}</button>` : ''}</div>`).join('')}
       </section>
     </div>
@@ -1554,29 +1559,66 @@ function hydrateFiles(){
 }
 
 /* =========================================================
-   Login
+   Login (PIN)
    ========================================================= */
+const PIN_RE = /^\d{4,6}$/;
+async function pinHash(pin){
+  const data = new TextEncoder().encode('mirkab:' + (S.team || '') + ':' + pin);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function uniquePin(){
+  const used = new Set(S.data.members.filter(m => !m.archived && m.pinHash).map(m => m.pinHash));
+  for (let i = 0; i < 50; i++){
+    const r = new Uint32Array(1); crypto.getRandomValues(r);
+    const pin = String(1000 + (r[0] % 9000));
+    if (!used.has(await pinHash(pin))) return pin;
+  }
+  return '';
+}
+async function pinTaken(h, exceptId){ return S.data.members.some(m => !m.archived && m.id !== exceptId && m.pinHash === h); }
+function pinField(id, label, opts = {}){
+  return `<div class="fld"><label for="${id}">${label}${opts.opt ? ` <span class="opt">${opts.opt}</span>` : ''}</label>
+    <div style="display:flex;gap:8px"><input class="inp ltr pin-in" id="${id}" name="${opts.name || 'pin'}" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" ${opts.required ? 'required' : ''} value="${esc(opts.value || '')}" placeholder="${esc(opts.placeholder || '••••')}" ${opts.autofocus ? 'autofocus' : ''}>
+    ${opts.gen ? `<button type="button" class="btn sm" data-act="gen-pin" data-for="${id}">رقم جديد</button>` : ''}</div></div>`;
+}
+function showPinCard(name, pin){
+  openModal(`${dlgHead('رقم دخول ' + esc(name))}
+    <div class="dlg-b" style="justify-items:center;text-align:center">
+      <div class="pin-show ltr tnum" id="pin-show">${esc(pin)}</div>
+      <p class="small muted">أرسل هذا الرقم لـ${esc(name)} بشكل خاص. بيدخل فيه مِرْكاب من رابط الدعوة. الرقم ما ينحفظ ظاهر، فإذا نسيه تسوي له رقم جديد من الإعدادات.</p>
+    </div>
+    <div class="dlg-f"><button class="btn primary" type="button" data-act="copy-pin" data-v="${esc(pin)}">نسخ الرقم</button><button class="btn ghost" type="button" data-act="close">تم</button></div>`, 'sm');
+}
 function showLogin(ctx){
   $('#boot').hidden = true; $('#shell').hidden = true;
   const el = $('#login'); el.hidden = false; el.className = 'login';
   const ms = ctx.members;
+  if (el.dataset.mode === (ms.length ? 'pin' : 'first') && el.querySelector('form')) return;
+  el.dataset.mode = ms.length ? 'pin' : 'first';
   el.innerHTML = `<div class="login-inner">
     <div class="login-brand"><span class="emoji" aria-hidden="true">🚍</span><h1>مِرْكاب</h1><p class="tag">خلّ الباصات علينا.</p><div class="road" aria-hidden="true"></div></div>
-    ${ms.length ? `<h2>مين معنا اليوم؟</h2><div class="who">${ms.map(m => `<button type="button" data-act="choose-me" data-id="${esc(m.id)}">${avatar(ctx, m.id, 'lg')}<span><span class="nm">${esc(m.name)}</span><br><span class="rl">${ROLES[m.role] || ''}</span></span><span class="go">${icon('fwd')}</span></button>`).join('')}</div>
-      <p class="small muted" style="margin-top:14px">اسمك ما هو بالقائمة؟ <button type="button" class="link" data-act="first-member">أضف نفسك</button></p>`
-    : `<h2>أول مرة؟ ابدأ باسمك</h2>${firstMemberForm(true)}`}
+    ${ms.length ? `<form class="panel box" data-form="pin-login" style="display:grid;gap:14px" novalidate>
+        <div class="fld"><label for="pl-pin" style="font-size:var(--fs-md);color:var(--ink)">رقم الدخول</label>
+          <input class="inp ltr pin-in pin-big" id="pl-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" required autofocus placeholder="••••"></div>
+        <button class="btn primary" type="submit">دخول</button>
+      </form>
+      <p class="small muted" style="margin-top:14px">ما عندك رقم دخول؟ اطلبه من مشرف الفريق.</p>`
+    : `<h2>أول مرة؟ ابدأ باسمك ورقم دخولك</h2>${firstMemberForm(true)}`}
   </div>
   <p class="login-foot">مِرْكاب — كل باص، وكل تفاصيله، في مكان واحد.</p>`;
 }
 function firstMemberForm(first){
   return `<form class="panel box" data-form="first-member" style="display:grid;gap:12px" novalidate>
     <div class="fld"><label for="fm-name">الاسم</label><input class="inp" id="fm-name" name="name" required maxlength="40" autocomplete="name" placeholder="مثال: أحمد"></div>
-    <div class="fld"><label for="fm-role">الدور</label><select class="inp" id="fm-role" name="role">${Object.keys(ROLES).map(k => `<option value="${k}" ${k === (first ? 'supervisor' : 'member') ? 'selected' : ''}>${ROLES[k]}</option>`).join('')}</select></div>
+    ${pinField('fm-pin', 'اختر رقم دخول', {opt:'4 إلى 6 أرقام', required:true})}
+    ${pinField('fm-pin2', 'أعد كتابة الرقم', {name:'pin2', required:true})}
+    <p class="small muted">بتصير أنت المشرف، وتقدر تضيف الفريق وتسوي لكل واحد رقم دخول.</p>
     <button class="btn primary" type="submit">ابدأ</button>
   </form>`;
 }
-async function chooseMe(id){
-  S.me = id; lsSet(LS_ME, id);
+async function chooseMe(id, h){
+  S.me = id; S.meH = h || null; lsSet(LS_ME, {id, h: h || null});
   if (S.mode === 'db' && S.uid){ try { await db.doc('data/users/' + S.uid + '/profile').set({memberId: id}); } catch(e){} }
   closeAllModals(); lastRouteKey = ''; render();
 }
@@ -1887,17 +1929,31 @@ function openBus(id){
       <div class="dlg-f"><button class="btn primary" type="submit">${b ? 'حفظ' : 'إضافة الباص'}</button>${b && isSup() ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="buses" data-id="${esc(b.id)}">${icon('archive')}أرشفة الباص</button>` : ''}</div>
     </form>`);
 }
-function openMember(id){
+async function openMember(id){
   const m = id ? S.data.members.find(x => x.id === id) : null;
-  const sup = isSup();
+  const sup = isSup(), self = m && m.id === S.me;
+  const pin = m ? '' : await uniquePin();
   openModal(`${dlgHead(m ? 'بيانات العضو' : 'عضو جديد')}
     <form data-form="member" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(m ? m.id : '')}">
       <div class="dlg-b">
         <div class="fld"><label for="pf-name">الاسم</label><input class="inp" id="pf-name" name="name" required maxlength="40" value="${esc(m ? m.name : '')}" autofocus></div>
-        <div class="fld"><label for="pf-role">الدور</label><select class="inp" id="pf-role" name="role" ${sup ? '' : 'disabled'}>${Object.keys(ROLES).map(k => `<option value="${k}" ${(m ? m.role : 'member') === k ? 'selected' : ''}>${ROLES[k]}</option>`).join('')}</select></div>
+        <div class="fld"><label for="pf-role">الدور</label><select class="inp" id="pf-role" name="role" ${sup && !self ? '' : 'disabled'}>${Object.keys(ROLES).map(k => `<option value="${k}" ${(m ? m.role : 'member') === k ? 'selected' : ''}>${ROLES[k]}</option>`).join('')}</select></div>
+        ${m ? pinField('pf-pin', 'رقم دخول جديد', {opt: m.pinHash ? 'اتركه فاضي إذا ما تبي تغيّره' : 'ما عنده رقم دخول للحين', gen: sup, placeholder:'—'})
+            : pinField('pf-pin', 'رقم الدخول', {opt:'4 إلى 6 أرقام', value: pin, gen: true, required: true})}
+        ${!m ? '<p class="small muted">بعد الحفظ يطلع لك الرقم عشان ترسله له. هو يدخل فيه من رابط الدعوة.</p>' : ''}
       </div>
       <div class="dlg-f"><button class="btn primary" type="submit">حفظ</button>${m && sup && m.id !== S.me ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="members" data-id="${esc(m.id)}">${icon('archive')}أرشفة</button>` : ''}</div>
     </form>`, 'sm');
+}
+
+function openMyPin(){
+  const m = me(); if (!m || m.pinHash) return;
+  openModal(`${dlgHead('اختر رقم دخولك', 'من الحين الدخول لمِرْكاب يكون برقم دخول.')}
+    <form data-form="my-pin" novalidate style="display:contents"><div class="dlg-b">
+      ${pinField('mp-pin', 'رقم الدخول', {opt:'4 إلى 6 أرقام', required:true, autofocus:true})}
+      ${pinField('mp-pin2', 'أعد كتابة الرقم', {name:'pin2', required:true})}
+      ${isSup() ? '<p class="small muted">وبعدها سوّ لكل واحد في الفريق رقم دخول من الإعدادات ← الفريق.</p>' : ''}
+    </div><div class="dlg-f"><button class="btn primary" type="submit">حفظ الرقم</button></div></form>`, 'sm');
 }
 
 /* ---- quick add, more, search, alerts ---- */
@@ -1976,18 +2032,46 @@ const FORMS = {
     if (!TEAM_RE.test(code)) return fail(form, 'code', 'الرمز لازم يكون 8 أحرف أو أرقام على الأقل، بالإنجليزي.');
     lsSet(LS_TEAM, code); location.reload();
   },
+  async 'pin-login'(form){
+    const v = formVals(form); const ctx = getD();
+    if (S.pinLockUntil && Date.now() < S.pinLockUntil) return fail(form, 'pin', 'محاولات كثيرة. انتظر ' + Math.ceil((S.pinLockUntil - Date.now()) / 1000) + ' ثانية وحاول مرة ثانية.');
+    if (!PIN_RE.test(v.pin || '')) return fail(form, 'pin', 'رقم الدخول من 4 إلى 6 أرقام.');
+    const h = await pinHash(v.pin);
+    const m = ctx.members.find(x => x.pinHash === h);
+    if (!m){
+      S.pinFails = (S.pinFails || 0) + 1;
+      if (S.pinFails >= 5){ S.pinFails = 0; S.pinLockUntil = Date.now() + 30000; }
+      form.querySelector('#pl-pin').value = '';
+      return fail(form, 'pin', 'رقم الدخول غير صحيح.');
+    }
+    S.pinFails = 0;
+    chooseMe(m.id, h);
+    toast('أهلًا ' + m.name + ' 👋');
+  },
+  async 'my-pin'(form){
+    const v = formVals(form);
+    if (!PIN_RE.test(v.pin || '')) return fail(form, 'pin', 'رقم الدخول من 4 إلى 6 أرقام.');
+    if (v.pin !== v.pin2) return fail(form, 'pin2', 'الرقمين مو متطابقين.');
+    const h = await pinHash(v.pin);
+    if (await pinTaken(h, S.me)) return fail(form, 'pin', 'هذا الرقم مستخدم لعضو ثاني، اختر رقم ثاني.');
+    const ok = await guarded(async () => { await patchDoc('members', S.me, {pinHash: h, pinSetAt: Date.now()}); });
+    if (ok){ S.meH = h; lsSet(LS_ME, {id: S.me, h}); closeModal(); toast('تم حفظ رقم دخولك. لا تعطيه لأحد.'); }
+  },
   async 'first-member'(form){
     const v = formVals(form);
     if (v.name.length < 2) return fail(form, 'name', 'اكتب اسمك (حرفين على الأقل).');
+    if (!PIN_RE.test(v.pin || '')) return fail(form, 'pin', 'رقم الدخول من 4 إلى 6 أرقام.');
+    if (v.pin !== v.pin2) return fail(form, 'pin2', 'الرقمين مو متطابقين.');
     const ctx = getD();
+    if (ctx.members.length) return fail(form, 'name', 'الفريق فيه أعضاء. اطلب رقم دخول من المشرف.');
     const id = genId('m');
-    const role = ctx.members.length ? v.role : 'supervisor';
+    const h = await pinHash(v.pin);
     const ok = await guarded(async () => {
-      await putDoc('members', id, {name: v.name, role, color: MEMBER_COLORS[ctx.members.length % MEMBER_COLORS.length], createdAt: Date.now()});
+      await putDoc('members', id, {name: v.name, role: 'supervisor', color: MEMBER_COLORS[0], createdAt: Date.now(), pinHash: h, pinSetAt: Date.now()});
     });
     if (!ok) return;
     S.me = id; await logAct('member_add', {title: v.name, refId: id});
-    chooseMe(id);
+    chooseMe(id, h);
     toast('أهلًا ' + v.name + '، حياك في مِرْكاب.');
   },
   async maint(form, wrap){
@@ -2154,12 +2238,34 @@ const FORMS = {
   async member(form){
     const v = formVals(form);
     if (!v.name || v.name.length < 2) return fail(form, 'name', 'اكتب الاسم.');
-    const ctx = getD();
+    const sup = isSup(), self = v.id && v.id === S.me;
+    if (!sup && !self) return fail(form, 'name', 'التعديل على الأعضاء للمشرف فقط.');
+    if (!v.id && !v.pin) return fail(form, 'pin', 'اكتب رقم دخول للعضو، أو اضغط «رقم جديد».');
+    let h = null;
+    if (v.pin){
+      if (!PIN_RE.test(v.pin)) return fail(form, 'pin', 'رقم الدخول من 4 إلى 6 أرقام.');
+      h = await pinHash(v.pin);
+      if (await pinTaken(h, v.id || null)) return fail(form, 'pin', 'هذا الرقم مستخدم لعضو ثاني، اختر رقم ثاني.');
+    }
+    let id = v.id;
     const ok = await guarded(async () => {
-      if (v.id){ const patch = {name: v.name}; if (isSup() && v.role) patch.role = v.role; await patchDoc('members', v.id, patch); await logAct('member_edit', {refId: v.id, title: v.name}); }
-      else { const id = genId('m'); await putDoc('members', id, {name: v.name, role: v.role || 'member', color: MEMBER_COLORS[S.data.members.length % MEMBER_COLORS.length], createdAt: Date.now()}); await logAct('member_add', {refId: id, title: v.name}); }
+      if (id){
+        const patch = {name: v.name};
+        if (sup && v.role && !self) patch.role = v.role;
+        if (h){ patch.pinHash = h; patch.pinSetAt = Date.now(); }
+        await patchDoc('members', id, patch);
+        await logAct('member_edit', {refId: id, title: v.name});
+      } else {
+        id = genId('m');
+        await putDoc('members', id, {name: v.name, role: v.role || 'member', color: MEMBER_COLORS[S.data.members.length % MEMBER_COLORS.length], createdAt: Date.now(), pinHash: h, pinSetAt: Date.now()});
+        await logAct('member_add', {refId: id, title: v.name});
+      }
     });
-    if (ok){ closeModal(); toast('تم الحفظ.'); }
+    if (!ok) return;
+    closeModal();
+    if (h && self){ S.meH = h; lsSet(LS_ME, {id: S.me, h}); toast('تم تغيير رقم دخولك.'); }
+    else if (h) showPinCard(v.name, v.pin);
+    else toast('تم الحفظ.');
   }
 };
 
@@ -2186,7 +2292,7 @@ const ACTIONS = {
   more(){ openMore(); },
   search(){ openSearch(); },
   alerts(){ openAlerts(); },
-  'switch-user'(){ S.me = null; lsSet(LS_ME, null); closeAllModals(); render(); },
+  'switch-user'(){ S.me = null; S.meH = null; lsSet(LS_ME, null); closeAllModals(); render(); },
   'choose-me'(d){ chooseMe(d.id); },
   'first-member'(){ openModal(`${dlgHead('أضف نفسك')}<div class="dlg-b">${firstMemberForm(false)}</div>`, 'sm'); },
   'add-maint'(d){ if (d.replace) closeModal(); openMaint({bus: d.bus, type: d.type || undefined}); },
@@ -2220,6 +2326,8 @@ const ACTIONS = {
   odo(d){ openOdo(d.id); },
   'edit-bus'(d){ openBus(d.id); },
   'add-member'(){ openMember(); },
+  async 'gen-pin'(d){ const i = document.getElementById(d.for); if (i){ i.value = await uniquePin(); i.dispatchEvent(new Event('input', {bubbles:true})); } },
+  'copy-pin'(d){ try { navigator.clipboard.writeText(d.v).then(() => toast('تم نسخ الرقم.'), () => toast('حدّد الرقم وانسخه يدويًا.')); } catch(e){ toast('حدّد الرقم وانسخه يدويًا.'); } },
   'edit-member'(d){ openMember(d.id); },
   'bus-tab'(d){ S.ui.busTab = d.v; render(); },
   'bus-filter'(d){ S.ui.busFilter = d.v; render(); },
@@ -2334,7 +2442,9 @@ function showTeamGate(){
   await initStore();
   if (S.mode === 'nocfg'){ showGate('<div class="panel box"><b>مِرْكاب يحتاج ربط بقاعدة البيانات.</b><p class="small muted" style="margin-top:6px">ملف الإعداد ناقص. تواصل مع اللي جهّز الموقع.</p></div>'); return; }
   if (S.mode === 'noteam'){ showTeamGate(); return; }
-  let meId = lsGet(LS_ME, null);
+  const sess = lsGet(LS_ME, null);
+  let meId = sess && typeof sess === 'object' ? sess.id : sess;
+  S.meH = sess && typeof sess === 'object' ? sess.h : null;
   if (S.mode === 'db' && S.uid){
     try { const p = await db.doc('data/users/' + S.uid + '/profile').get(); if (p.exists && p.data().memberId) meId = p.data().memberId; } catch(e){}
   }
