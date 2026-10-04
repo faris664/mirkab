@@ -1,0 +1,2349 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#202427">
+<meta name="description" content="مِرْكاب — متابعة وصيانة باصات حلقات التحفيظ">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="مِرْكاب">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>مِرْكاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..700&display=swap">
+<style>
+/* Layout: asphalt sidebar (desktop) + stone-grey working surface; mobile = top bar + bottom nav with centre add button.
+   Signature: the road line (dashed yellow) used for loading, schedule progress and dividers; odometer digits; plate chips. */
+:root{
+  --bg:#E9E8E3; --surface:#F3F2EE; --card:#FCFCFA; --sunken:#E2E1DB;
+  --ink:#1D2023; --ink-2:#464B50; --muted:#767A7E; --line:#D5D3CC; --line-2:#E3E1DB;
+  --asphalt:#24282C; --on-asphalt:#F2F0EA;
+  --side-bg:#202427; --side-ink:#E8E6E0; --side-muted:#8E9296; --side-line:#33383C; --side-hi:#2C3135;
+  --accent:#2E6B55; --accent-soft:#DAE7E0; --on-accent:#F4F7F5;
+  --road:#D6A23A; --road-ink:#3A3427; --track:#2A2F33; --on-track:#F2F0EA;
+  --ok:#367553; --ok-soft:#DDEBE2; --warn:#9C6F12; --warn-soft:#F1E6CC; --bad:#A8463A; --bad-soft:#F2DDD8; --none:#8A8D90; --none-soft:#E4E3DE;
+  --shadow:0 1px 0 rgba(29,32,35,.03),0 1px 2px rgba(29,32,35,.06);
+  --shadow-lg:0 18px 50px rgba(20,22,24,.18),0 2px 6px rgba(20,22,24,.08);
+  --scrim:rgba(24,26,28,.42);
+  --r:10px; --r-sm:7px;
+  --font:"Readex Pro","IBM Plex Sans Arabic","Noto Kufi Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  --fs-xs:12px; --fs-sm:13px; --fs-md:15px; --fs-lg:18px; --fs-xl:23px; --fs-2xl:30px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151719; --surface:#1A1D1F; --card:#202326; --sunken:#121415;
+  --ink:#ECEAE4; --ink-2:#C2BFB8; --muted:#8F9295; --line:#33373B; --line-2:#2A2E31;
+  --asphalt:#E6E3DB; --on-asphalt:#1A1C1E;
+  --side-bg:#101213; --side-ink:#E6E4DE; --side-muted:#80858A; --side-line:#24282B; --side-hi:#1D2023;
+  --accent:#73B79A; --accent-soft:#1D3229; --on-accent:#0F1A15;
+  --road:#D3A040; --road-ink:#E8D5A8; --track:#0D0F10; --on-track:#E6E3DB;
+  --ok:#76B992; --ok-soft:#1C2E24; --warn:#D9AD58; --warn-soft:#352B16; --bad:#E2826F; --bad-soft:#3A221D; --none:#8F9295; --none-soft:#26292C;
+  --shadow:0 1px 0 rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.3);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.4);
+  --scrim:rgba(0,0,0,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#151719; --surface:#1A1D1F; --card:#202326; --sunken:#121415;
+  --ink:#ECEAE4; --ink-2:#C2BFB8; --muted:#8F9295; --line:#33373B; --line-2:#2A2E31;
+  --asphalt:#E6E3DB; --on-asphalt:#1A1C1E;
+  --side-bg:#101213; --side-ink:#E6E4DE; --side-muted:#80858A; --side-line:#24282B; --side-hi:#1D2023;
+  --accent:#73B79A; --accent-soft:#1D3229; --on-accent:#0F1A15;
+  --road:#D3A040; --road-ink:#E8D5A8; --track:#0D0F10; --on-track:#E6E3DB;
+  --ok:#76B992; --ok-soft:#1C2E24; --warn:#D9AD58; --warn-soft:#352B16; --bad:#E2826F; --bad-soft:#3A221D; --none:#8F9295; --none-soft:#26292C;
+  --shadow:0 1px 0 rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.3);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.4);
+  --scrim:rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{direction:rtl}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:var(--fs-md);line-height:1.6;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.3;text-wrap:balance}
+p{margin:0}
+.num,.tnum{font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;unicode-bidi:isolate}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.emoji{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal;line-height:1}
+
+/* ---------- boot / loader ---------- */
+.boot{min-height:100dvh;display:grid;place-items:center;padding-inline:16px;background:var(--bg)}
+.loader{display:grid;justify-items:center;gap:14px;text-align:center}
+.loader .emoji{font-size:54px;animation:bob 1.1s ease-in-out infinite}
+.road{position:relative;width:180px;height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.road::after{content:"";position:absolute;inset:2px -40px;background:repeating-linear-gradient(90deg,var(--road) 0 16px,transparent 16px 30px);animation:roll .7s linear infinite}
+.loader p{color:var(--muted);font-size:var(--fs-sm)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-1.5deg)}}
+@keyframes roll{to{transform:translateX(30px)}}
+.mini-loader{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:var(--fs-sm);padding:14px 0}
+.mini-loader .emoji{font-size:20px;animation:bob 1.1s ease-in-out infinite}
+
+/* ---------- login ---------- */
+.login{min-height:100dvh;display:grid;grid-template-rows:1fr auto;padding-inline:16px;background:var(--bg)}
+.login-inner{align-self:center;justify-self:center;width:100%;max-width:420px;padding-block:40px}
+.login-brand{display:grid;justify-items:start;gap:6px;margin-bottom:34px}
+.login-brand .emoji{font-size:46px}
+.login-brand h1{font-size:40px;font-weight:700;letter-spacing:-.5px}
+.login-brand .tag{color:var(--ink-2);font-size:var(--fs-lg)}
+.login-brand .road{width:120px;margin-top:8px}
+.login h2{font-size:var(--fs-sm);font-weight:500;color:var(--muted);margin-bottom:10px}
+.who{display:grid;gap:8px}
+.who button{display:flex;align-items:center;gap:12px;width:100%;text-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.who button:hover{border-color:var(--ink-2)}
+.who button:active{transform:scale(.99)}
+.who .nm{font-weight:600}
+.who .rl{color:var(--muted);font-size:var(--fs-sm)}
+.who .go{margin-inline-start:auto;color:var(--muted)}
+.login-foot{padding-block:18px;text-align:center;color:var(--muted);font-size:var(--fs-sm)}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);min-height:100dvh}
+.side{display:none}
+@media (min-width:960px){
+  .shell{grid-template-columns:244px minmax(0,1fr)}
+  .side{display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100dvh;background:var(--side-bg);color:var(--side-ink);padding:22px 14px 16px;overflow-y:auto}
+}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px 4px}
+.brand .emoji{font-size:28px}
+.brand b{font-size:24px;font-weight:700;letter-spacing:-.3px}
+.brand small{display:block;font-size:var(--fs-xs);color:var(--side-muted);font-weight:400;margin-top:-2px}
+.side .lane{height:3px;margin:14px 8px 14px;background:repeating-linear-gradient(90deg,var(--road) 0 14px,transparent 14px 26px);opacity:.75}
+.nav{display:grid;gap:2px}
+.nav a{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:8px;color:var(--side-muted);font-weight:500;transition:background .15s,color .15s}
+.nav a:hover{color:var(--side-ink);background:var(--side-hi)}
+.nav a.on{color:var(--side-ink);background:var(--side-hi)}
+.nav a.on svg{color:var(--road)}
+.nav .cnt{margin-inline-start:auto;font-size:var(--fs-xs);background:var(--bad);color:#fff;border-radius:20px;padding:0 7px;line-height:18px}
+.side-foot{margin-top:auto;display:grid;gap:2px;border-top:1px solid var(--side-line);padding-top:12px}
+.me-chip{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;background:none;border:0;color:var(--side-ink);text-align:start;width:100%}
+.me-chip:hover{background:var(--side-hi)}
+.me-chip small{display:block;color:var(--side-muted);font-size:var(--fs-xs)}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line-2)}
+.topbar-in{display:flex;align-items:center;gap:8px;padding:10px 16px;max-width:1240px;margin-inline:auto}
+@media (min-width:960px){.topbar-in{padding:12px 32px}}
+.tb-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px}
+.tb-brand .emoji{font-size:22px}
+@media (min-width:960px){.tb-brand{display:none}}
+.searchbar{display:none}
+@media (min-width:960px){.searchbar{display:flex;align-items:center;gap:10px;flex:1;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 12px;color:var(--muted);cursor:pointer;text-align:start}
+  .searchbar:hover{border-color:var(--ink-2)}}
+.tb-sp{flex:1}
+.icon-btn{position:relative;display:grid;place-items:center;width:40px;height:40px;border-radius:9px;border:1px solid transparent;background:none;cursor:pointer;color:var(--ink-2)}
+.icon-btn:hover{background:var(--card);border-color:var(--line)}
+.icon-btn .dot{position:absolute;top:7px;inset-inline-end:7px;min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font-size:10px;line-height:16px;text-align:center;padding:0 4px;font-weight:600}
+@media (min-width:960px){.only-m{display:none!important}}
+@media (max-width:959px){.only-d{display:none!important}}
+
+.view{width:100%;max-width:1240px;margin-inline:auto;padding-inline:16px;padding-block:18px 112px}
+@media (min-width:960px){.view{padding-inline:32px;padding-block:26px 60px}}
+
+/* bottom nav */
+.bnav{position:fixed;inset-inline:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);display:grid;grid-template-columns:repeat(5,1fr);align-items:end}
+@media (min-width:960px){.bnav{display:none}}
+.bnav a,.bnav button{display:grid;justify-items:center;gap:2px;padding:8px 0 9px;font-size:11px;color:var(--muted);background:none;border:0;cursor:pointer}
+.bnav .on{color:var(--ink)}
+.bnav .on svg{color:var(--accent)}
+.bnav .fab{align-self:center;justify-self:center;width:52px;height:52px;border-radius:15px;background:var(--asphalt);color:var(--on-asphalt);display:grid;place-items:center;margin-top:-18px;box-shadow:0 6px 18px rgba(0,0,0,.22);padding:0}
+.bnav .fab svg{width:24px;height:24px;stroke-width:2}
+
+/* ---------- common ---------- */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.page-head h1{font-size:var(--fs-xl);font-weight:650}
+.page-head p{color:var(--muted);font-size:var(--fs-sm);margin-top:2px}
+.eyebrow{font-size:var(--fs-xs);color:var(--muted);letter-spacing:.2px}
+.sec{margin-top:26px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sec-h h2{font-size:var(--fs-lg);font-weight:600}
+.sec-h a,.link{color:var(--accent);font-size:var(--fs-sm);font-weight:500;cursor:pointer;background:none;border:0;padding:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,transform .1s}
+.btn:hover{border-color:var(--ink-2)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--asphalt);border-color:var(--asphalt);color:var(--on-asphalt)}
+.btn.primary:hover{opacity:.92}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.ghost{background:none;border-color:transparent;color:var(--ink-2)}
+.btn.ghost:hover{background:var(--sunken)}
+.btn.danger{color:var(--bad)}
+.btn.sm{min-height:34px;padding:0 12px;font-size:var(--fs-sm);border-radius:8px}
+.btn svg{width:18px;height:18px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);font-weight:500;padding:2px 9px 2px 10px;border-radius:20px;white-space:nowrap;line-height:20px}
+.lamp{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.pill-ok{background:var(--ok-soft);color:var(--ok)}
+.pill-warn{background:var(--warn-soft);color:var(--warn)}
+.pill-bad{background:var(--bad-soft);color:var(--bad)}
+.pill-none{background:var(--none-soft);color:var(--none)}
+.sev{font-size:var(--fs-xs);font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 6px;line-height:20px;white-space:nowrap}
+.sev-urgent{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.sev-important{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.plate{display:inline-flex;align-items:stretch;border:1.5px solid var(--ink-2);border-radius:5px;font-size:var(--fs-xs);line-height:1;overflow:hidden;background:var(--card);color:var(--ink);font-weight:500;white-space:nowrap}
+.plate span{padding:4px 6px}
+.plate .k{background:var(--ink-2);color:var(--card);font-size:9px;display:grid;place-items:center;padding:4px 4px;letter-spacing:.5px}
+.code{font-size:var(--fs-xs);color:var(--muted);border:1px dashed var(--line);border-radius:5px;padding:2px 6px;white-space:nowrap}
+.av{display:inline-grid;place-items:center;border-radius:50%;color:#fff;font-weight:600;flex:none;width:32px;height:32px;font-size:13px}
+.av.sm{width:24px;height:24px;font-size:11px}
+.av.lg{width:42px;height:42px;font-size:16px}
+.tile{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:var(--sunken);color:var(--ink-2);flex:none}
+.tile.t-bad{background:var(--bad-soft);color:var(--bad)}
+.tile.t-warn{background:var(--warn-soft);color:var(--warn)}
+.tile.t-ok{background:var(--ok-soft);color:var(--ok)}
+.muted{color:var(--muted)}
+.small{font-size:var(--fs-sm)}
+.xs{font-size:var(--fs-xs)}
+
+.empty{display:grid;justify-items:center;text-align:center;gap:6px;padding:34px 16px;color:var(--muted)}
+.empty .emoji{font-size:34px;margin-bottom:4px;opacity:.9}
+.empty b{color:var(--ink);font-weight:600;font-size:var(--fs-md)}
+.empty .btn{margin-top:10px}
+
+/* entry motion */
+.rise{animation:rise .32s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- dashboard ---------- */
+.hello{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.hello h1{font-size:var(--fs-2xl);font-weight:650;letter-spacing:-.3px}
+.hello .lede{color:var(--ink-2);margin-top:4px;max-width:60ch}
+.fleet{padding:18px}
+.counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.counts > *{padding-inline:12px;border-inline-start:1px solid var(--line-2);display:grid;gap:2px;align-content:start}
+.counts > :first-child{border-inline-start:0;padding-inline-start:0}
+.counts b{font-size:var(--fs-2xl);font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.counts span{font-size:var(--fs-xs);color:var(--muted);display:flex;align-items:center;gap:6px}
+.counts .c-ok b{color:var(--ok)} .counts .c-warn b{color:var(--warn)} .counts .c-bad b{color:var(--bad)}
+@media (max-width:440px){.counts{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:14px}.counts > :nth-child(3){border-inline-start:0;padding-inline-start:0}}
+.lot{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)}
+.bay{position:relative;display:grid;justify-items:center;gap:1px;padding:10px 6px 8px;border:1.5px solid var(--line);border-radius:9px;background:var(--surface);text-align:center;transition:border-color .15s,transform .15s}
+.bay:hover{border-color:var(--ink-2);transform:translateY(-1px)}
+.bay .lamp{position:absolute;top:7px;inset-inline-start:7px}
+.bay .n{font-size:20px;font-weight:600;line-height:1.2}
+.bay .nm{font-size:11px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bay.l-ok .lamp{color:var(--ok)} .bay.l-warn{border-color:color-mix(in srgb,var(--warn) 55%,var(--line))} .bay.l-warn .lamp{color:var(--warn)}
+.bay.l-bad{border-color:color-mix(in srgb,var(--bad) 60%,var(--line));background:color-mix(in srgb,var(--bad-soft) 55%,var(--surface))} .bay.l-bad .lamp{color:var(--bad)}
+
+.duo{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1080px){.duo{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+
+.todo{display:grid}
+.todo-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line-2)}
+.todo-item:first-child{border-top:0}
+.todo-item .tx{min-width:0;flex:1}
+.todo-item .t{font-weight:500;overflow-wrap:anywhere}
+.todo-item .s{font-size:var(--fs-sm);color:var(--muted)}
+.todo-item .btn{flex:none}
+.todo-ok{display:flex;align-items:center;gap:12px;padding:18px 16px;color:var(--ink-2)}
+.todo-ok .emoji{font-size:26px}
+
+/* bus cards */
+.bus-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.bus-card{display:grid;gap:14px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.bus-card:hover{border-color:var(--ink-2);transform:translateY(-1px)}
+.bc-top{display:flex;align-items:flex-start;gap:12px}
+.bus-glyph{display:grid;place-items:center;width:44px;height:44px;border-radius:11px;background:var(--surface);border:1px solid var(--line-2);font-size:24px;flex:none}
+.bc-name{min-width:0;flex:1}
+.bc-name h3{font-size:var(--fs-lg);font-weight:650;line-height:1.25;overflow-wrap:anywhere}
+.bc-name .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:0;border:1px solid var(--line-2);border-radius:8px;background:var(--surface)}
+.facts > div{padding:8px 10px;border-inline-start:1px solid var(--line-2);min-width:0}
+.facts > div:first-child{border-inline-start:0}
+.facts dt{font-size:11px;color:var(--muted)}
+.facts dd{margin:0;font-weight:500;font-size:var(--fs-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.facts dd.hot{color:var(--bad)}
+.bc-foot{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-xs);color:var(--muted)}
+.bc-foot .open{color:var(--ink);font-weight:500;font-size:var(--fs-sm)}
+
+/* timeline */
+.tl{list-style:none;margin:0;padding:0;display:grid}
+.tl li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;position:relative;padding-bottom:14px}
+.tl li:last-child{padding-bottom:0}
+.tl li::before{content:"";position:absolute;top:36px;bottom:2px;inset-inline-start:17px;width:0;border-inline-start:2px dotted var(--line)}
+.tl li:last-child::before{display:none}
+.tl .tile{width:36px;height:36px}
+.tl .t{font-weight:500;overflow-wrap:anywhere}
+.tl .s{font-size:var(--fs-sm);color:var(--muted)}
+.tl .d{font-size:var(--fs-sm);color:var(--ink-2);margin-top:2px;overflow-wrap:anywhere}
+.tl .row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.tl .when{font-size:var(--fs-xs);color:var(--muted);white-space:nowrap}
+.tl button.li-btn{all:unset;display:block;cursor:pointer;border-radius:6px}
+.tl button.li-btn:focus-visible{outline:2px solid var(--accent)}
+.day-h{font-size:var(--fs-sm);font-weight:600;color:var(--ink-2);margin:18px 0 10px;display:flex;align-items:center;gap:10px}
+.day-h::after{content:"";flex:1;height:0;border-top:1px dashed var(--line)}
+.day-h:first-child{margin-top:0}
+
+/* ---------- bus page ---------- */
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:var(--fs-sm);margin-bottom:14px}
+.back:hover{color:var(--ink)}
+.bus-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.bus-head .emoji-xl{display:grid;place-items:center;width:64px;height:64px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-size:36px;flex:none;box-shadow:var(--shadow)}
+.bus-head .nm{flex:1;min-width:200px}
+.bus-head h1{font-size:28px;font-weight:700;letter-spacing:-.3px;overflow-wrap:anywhere}
+.bus-head .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;color:var(--muted);font-size:var(--fs-sm)}
+.bus-head .acts{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:640px){.bus-head .acts{width:100%}.bus-head .acts .btn{flex:1}}
+.status-hero{margin-top:18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;padding:18px;border-radius:var(--r);border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+.status-hero .big-lamp{width:54px;height:54px;border-radius:50%;display:grid;place-items:center}
+.status-hero .big-lamp i{width:18px;height:18px;border-radius:50%;background:currentColor;box-shadow:0 0 0 6px color-mix(in srgb,currentColor 18%,transparent)}
+.s-ok .big-lamp{background:var(--ok-soft);color:var(--ok)}
+.s-warn .big-lamp{background:var(--warn-soft);color:var(--warn)}
+.s-bad .big-lamp{background:var(--bad-soft);color:var(--bad)}
+.s-bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.status-hero h2{font-size:var(--fs-xl);font-weight:650}
+.s-ok h2{color:var(--ok)} .s-warn h2{color:var(--warn)} .s-bad h2{color:var(--bad)}
+.status-hero .why{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.why span{font-size:var(--fs-xs);background:var(--surface);border:1px solid var(--line-2);border-radius:6px;padding:2px 8px;color:var(--ink-2)}
+.odo{grid-column:1/-1;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:var(--fs-sm);padding-top:12px;border-top:1px dashed var(--line)}
+.odo-d{display:inline-flex;gap:2px;direction:ltr}
+.odo-d i{font-style:normal;display:grid;place-items:center;width:20px;height:26px;background:var(--track);color:var(--on-track);border-radius:3px;font-weight:500;font-variant-numeric:tabular-nums;font-size:14px}
+@media (min-width:760px){.status-hero{grid-template-columns:auto minmax(0,1fr) auto}.odo{grid-column:auto;border-top:0;padding-top:0;flex-direction:column;align-items:flex-end;gap:6px}}
+.indic{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.indic > div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;min-width:0}
+.indic .l{font-size:var(--fs-xs);color:var(--muted);display:flex;align-items:center;gap:6px}
+.indic .l svg{width:16px;height:16px}
+.indic .v{font-size:var(--fs-lg);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.indic .x{font-size:var(--fs-xs);color:var(--muted)}
+.indic .v.hot{color:var(--bad)}
+@media (max-width:440px){.indic{gap:6px}.indic > div{padding:10px}.indic .v{font-size:var(--fs-md)}}
+
+.tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{background:none;border:0;padding:10px 12px;cursor:pointer;color:var(--muted);font-weight:500;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
+.tabs .c{font-size:11px;color:var(--muted);margin-inline-start:4px}
+.tab-body{padding-top:18px}
+.ov{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1000px){.ov{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
+.box{padding:16px}
+.box > h3{font-size:var(--fs-md);font-weight:600;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+
+/* schedules — the road */
+.sched{display:grid;gap:14px}
+.sch{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.sch .hd{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.sch .nm{font-weight:500}
+.sch .every{font-size:var(--fs-xs);color:var(--muted)}
+.lane-bar{position:relative;height:10px;border-radius:5px;background:var(--track);margin:8px 0 6px;overflow:hidden}
+.lane-bar::before{content:"";position:absolute;inset:4px 4px;background:repeating-linear-gradient(90deg,var(--road) 0 8px,transparent 8px 16px);opacity:.55}
+.lane-bar b{position:absolute;inset-block:0;inset-inline-start:0;border-radius:5px;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.lane-bar.st-ok b{background:color-mix(in srgb,var(--ok) 80%,transparent)}
+.lane-bar.st-soon b{background:color-mix(in srgb,var(--warn) 85%,transparent)}
+.lane-bar.st-late b{background:color-mix(in srgb,var(--bad) 85%,transparent)}
+.sch .nx{font-size:var(--fs-xs);color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+
+/* lists / rows */
+.rows{display:grid}
+.row-i{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line-2);cursor:pointer;background:none;border-inline:0;border-bottom:0;width:100%;text-align:start;transition:background .12s}
+.row-i:first-child{border-top:0}
+.row-i:hover{background:var(--surface)}
+.row-i .t{font-weight:500;overflow-wrap:anywhere}
+.row-i .s{font-size:var(--fs-sm);color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.row-i .e{display:grid;justify-items:end;gap:4px;text-align:end}
+.row-i .money{font-weight:500;font-size:var(--fs-sm);white-space:nowrap}
+.row-i .when{font-size:var(--fs-xs);color:var(--muted);white-space:nowrap}
+.dotsep::before{content:"·";margin-inline-end:10px;color:var(--line)}
+
+/* filters */
+.filters{display:flex;gap:8px;align-items:center;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:thin}
+.filters > *{flex:none}
+.fsel{appearance:none;-webkit-appearance:none;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat left 10px center;border:1px solid var(--line);border-radius:8px;padding:7px 12px 7px 30px;font-size:var(--fs-sm);min-height:38px;cursor:pointer;max-width:180px}
+.fsel.set{border-color:var(--ink-2);font-weight:500}
+.fsearch{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:0 10px;min-height:38px;min-width:200px;flex:1 0 200px}
+.fsearch input{border:0;background:none;outline:none;width:100%;font-size:var(--fs-sm);min-width:0}
+.fsearch svg{width:16px;height:16px;color:var(--muted)}
+.fdate{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:var(--fs-sm);min-height:38px}
+.seg{display:inline-flex;background:var(--sunken);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:7px;cursor:pointer;font-size:var(--fs-sm);color:var(--ink-2);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:500;box-shadow:var(--shadow)}
+.res-n{font-size:var(--fs-xs);color:var(--muted);margin:0 2px 8px}
+
+/* tasks */
+.tgroups{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1080px){.tgroups{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}}
+.tg h2{display:flex;align-items:center;gap:8px;font-size:var(--fs-md);font-weight:600;margin-bottom:10px}
+.tg h2 .n{font-size:var(--fs-xs);color:var(--muted);font-weight:500}
+.tg-urgent h2 .lamp{color:var(--bad)} .tg-soon h2 .lamp{color:var(--warn)} .tg-done h2 .lamp{color:var(--ok)}
+.task{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-top:1px solid var(--line-2)}
+.task:first-child{border-top:0}
+.task .tx{flex:1;min-width:0}
+.task .t{font-weight:500;overflow-wrap:anywhere}
+.task.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.task .s{font-size:var(--fs-sm);color:var(--muted)}
+.chk{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--ink-2);display:grid;place-items:center;cursor:pointer;flex:none;margin-top:1px;background:var(--card)}
+.chk:checked{background:var(--ok);border-color:var(--ok)}
+.chk:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+
+/* stats */
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:860px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpi{padding:14px 16px}
+.kpi .l{font-size:var(--fs-xs);color:var(--muted)}
+.kpi .v{font-size:var(--fs-2xl);font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums;margin-top:4px}
+.kpi .v small{font-size:var(--fs-sm);color:var(--muted);font-weight:400;margin-inline-start:4px}
+.bars{display:grid;gap:10px}
+.bar-r{display:grid;grid-template-columns:minmax(80px,140px) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:var(--fs-sm)}
+.bar-r .lb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-t{height:12px;background:var(--sunken);border-radius:3px;overflow:hidden}
+.bar-t b{display:block;height:100%;background:var(--accent);border-radius:3px}
+.bar-r.top .bar-t b{background:var(--asphalt)}
+.bar-r .v{font-variant-numeric:tabular-nums;font-weight:500;min-width:3ch;text-align:end}
+.callout{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);margin-bottom:16px}
+.callout .emoji{font-size:28px}
+
+/* settings */
+.set-grid{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1000px){.set-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+.set-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line-2)}
+.set-row:first-child{border-top:0}
+.set-row .tx{flex:1;min-width:0}
+.set-row .t{font-weight:500}
+.set-row .s{font-size:var(--fs-sm);color:var(--muted)}
+.box-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line-2)}
+.box-h h2{font-size:var(--fs-md);font-weight:600}
+
+/* ---------- modal / sheet ---------- */
+.modal{position:fixed;inset:0;z-index:60;display:grid;align-items:end;justify-items:center}
+@media (min-width:700px){.modal{align-items:center;padding:24px}}
+.scrim{position:absolute;inset:0;background:var(--scrim);animation:fade .2s both}
+.dialog{position:relative;width:100%;max-width:560px;max-height:92dvh;display:flex;flex-direction:column;background:var(--card);border-radius:16px 16px 0 0;box-shadow:var(--shadow-lg);animation:up .26s cubic-bezier(.2,.8,.2,1) both;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (min-width:700px){.dialog{border-radius:14px;padding-bottom:0}}
+.dialog.sm{max-width:420px}
+.dialog.lg{max-width:680px}
+@keyframes up{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 0}
+@media (min-width:700px){.grab{display:none}}
+.dlg-h{display:flex;align-items:flex-start;gap:12px;padding:14px 18px 12px;border-bottom:1px solid var(--line-2)}
+.dlg-h .tx{flex:1;min-width:0}
+.dlg-h h2{font-size:var(--fs-lg);font-weight:600;overflow-wrap:anywhere}
+.dlg-h p{font-size:var(--fs-sm);color:var(--muted)}
+.dlg-b{padding:16px 18px;overflow-y:auto;display:grid;gap:14px}
+.dlg-f{display:flex;gap:8px;align-items:center;padding:12px 18px;border-top:1px solid var(--line-2);flex-wrap:wrap}
+.dlg-f .sp{flex:1}
+@media (max-width:520px){.dlg-f{flex-wrap:nowrap;gap:6px}.dlg-f .btn{padding:0 12px}.dlg-f .btn.ghost{padding:0 9px}.dlg-f .btn.primary:only-child,.dlg-f .btn.primary:first-child:nth-last-child(1){flex:1}}
+
+.fld{display:grid;gap:6px;min-width:0}
+.fld > label,.fld > .lbl{font-size:var(--fs-sm);font-weight:500;color:var(--ink-2)}
+.fld .opt{color:var(--muted);font-weight:400;font-size:var(--fs-xs)}
+.inp{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-height:44px;outline:none;transition:border-color .15s,background .15s}
+.inp:focus{border-color:var(--ink-2);background:var(--card)}
+textarea.inp{min-height:84px;resize:vertical;line-height:1.6}
+select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;padding-left:32px}
+.inp.bad{border-color:var(--bad)}
+.err{font-size:var(--fs-xs);color:var(--bad)}
+.km-hint{display:flex;gap:8px;align-items:flex-start;font-size:var(--fs-sm);color:var(--ink-2);background:var(--accent-soft);border-radius:8px;padding:9px 12px;margin:-4px 0 0}
+.km-hint svg{width:18px;height:18px;color:var(--accent);margin-top:2px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:var(--fs-sm);transition:all .12s}
+.chip span svg{width:16px;height:16px}
+.chip input:checked + span{background:var(--asphalt);color:var(--on-asphalt);border-color:var(--asphalt)}
+.chip input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.chip.c-urgent input:checked + span{background:var(--bad);border-color:var(--bad);color:#fff}
+.chip.c-important input:checked + span{background:var(--warn);border-color:var(--warn);color:#fff}
+.files-in{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.thumb{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--sunken);flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:3px;inset-inline-end:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+.thumb button svg{width:12px;height:12px;stroke-width:2.4}
+.add-file{display:grid;place-items:center;gap:2px;width:72px;height:72px;border-radius:8px;border:1.5px dashed var(--line);color:var(--muted);cursor:pointer;font-size:11px;text-align:center}
+.add-file:hover{border-color:var(--ink-2);color:var(--ink)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.gallery button{all:unset;cursor:pointer;display:block;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--sunken);max-width:100%}
+.gallery img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery figure{margin:0;display:grid;gap:4px}
+.gallery figcaption{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lightbox img{max-width:100%;max-height:75dvh;display:block;margin:auto;border-radius:8px}
+.meta-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;background:var(--surface);border-radius:9px;padding:12px 14px;margin:0}
+.meta-g dt{font-size:var(--fs-xs);color:var(--muted)}
+.meta-g dd{margin:0;font-size:var(--fs-sm);font-weight:500;overflow-wrap:anywhere}
+.meta-g .full{grid-column:1/-1}
+.desc{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink-2)}
+.hist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.hist li{display:flex;gap:10px;font-size:var(--fs-sm)}
+.hist .lamp{margin-top:7px}
+.hist .h-ok{color:var(--ok)} .hist .h-warn{color:var(--warn)} .hist .h-bad{color:var(--bad)}
+.hist .tx{flex:1;min-width:0}
+.hist .n{color:var(--ink-2);overflow-wrap:anywhere}
+.sheet-list{display:grid;gap:4px}
+.sheet-list button,.sheet-list a{display:flex;align-items:center;gap:12px;padding:10px 10px;border-radius:9px;background:none;border:0;cursor:pointer;text-align:start;width:100%;font-weight:500}
+.sheet-list button:hover,.sheet-list a:hover{background:var(--surface)}
+.sheet-list small{display:block;color:var(--muted);font-weight:400;font-size:var(--fs-xs)}
+.search-in{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-2)}
+.search-in input{flex:1;border:0;background:none;outline:none;font-size:var(--fs-lg);min-width:0}
+.sr-g h4{font-size:var(--fs-xs);color:var(--muted);font-weight:500;margin:6px 10px 4px}
+.alert-i{display:flex;gap:12px;align-items:flex-start;padding:12px 4px;border-top:1px solid var(--line-2);cursor:pointer;background:none;border-inline:0;border-bottom:0;width:100%;text-align:start}
+.alert-i:first-child{border-top:0}
+.alert-i .lamp{margin-top:8px}
+.alert-i.a-bad .lamp{color:var(--bad)} .alert-i.a-warn .lamp{color:var(--warn)}
+.alert-i .tx{flex:1;min-width:0}
+.alert-i .s{font-size:var(--fs-xs);color:var(--muted)}
+.alert-i.new .t{font-weight:600}
+.sched-ed{display:grid;gap:8px}
+.sched-ed .r{display:grid;grid-template-columns:auto minmax(0,1fr) 84px 96px;gap:8px;align-items:center;font-size:var(--fs-sm)}
+.sched-ed .r .inp{min-height:38px;padding:6px 8px}
+.sched-ed .hd{font-size:var(--fs-xs);color:var(--muted)}
+.sched-ed input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+
+.toast-wrap{position:fixed;inset-inline:0;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:80;display:grid;justify-items:center;pointer-events:none;padding-inline:16px}
+@media (min-width:960px){.toast-wrap{bottom:28px}}
+.toast{display:flex;align-items:center;gap:10px;background:var(--asphalt);color:var(--on-asphalt);padding:11px 16px;border-radius:10px;box-shadow:var(--shadow-lg);font-size:var(--fs-sm);font-weight:500;animation:up .25s both;max-width:100%}
+.toast.err{background:var(--bad);color:#fff}
+.toast .lamp{color:var(--ok)}
+.banner{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:9px;background:var(--warn-soft);color:var(--warn);font-size:var(--fs-sm);margin-bottom:16px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}
+</style>
+
+
+<style>:root{padding-top:env(safe-area-inset-top,0px)} html,body{margin:0}</style>
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>window.MIRKAB_FIREBASE = {"apiKey":"AIzaSyB-jMTmqD7GWaSMEmouiB2cJ4LXESJ7vls","authDomain":"mirkab-744fc.firebaseapp.com","projectId":"mirkab-744fc","storageBucket":"mirkab-744fc.firebasestorage.app","messagingSenderId":"564138871774","appId":"1:564138871774:web:05441020c2695e9b2e6b4f"};</script>
+<div id="app">
+  <div class="boot" id="boot">
+    <div class="loader" role="status" aria-live="polite">
+      <span class="emoji" aria-hidden="true">🚍</span>
+      <div class="road" aria-hidden="true"></div>
+      <p>مِرْكاب يجهّز لك الأسطول...</p>
+    </div>
+  </div>
+  <div id="login" hidden></div>
+  <div id="shell" class="shell" hidden>
+    <aside class="side" aria-label="القائمة الرئيسية">
+      <div class="brand"><span class="emoji" aria-hidden="true">🚍</span><div><b>مِرْكاب</b><small>متابعة أسطول التحفيظ</small></div></div>
+      <div class="lane" aria-hidden="true"></div>
+      <nav class="nav" id="side-nav"></nav>
+      <div class="side-foot" id="side-foot"></div>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-in">
+          <a class="tb-brand" href="#home"><span class="emoji" aria-hidden="true">🚍</span>مِرْكاب</a>
+          <button class="searchbar" data-act="search" type="button"><svg class="i"><use href="#i-search"/></svg><span>ابحث عن باص، مشكلة، لوحة، أو شخص...</span></button>
+          <span class="tb-sp"></span>
+          <button class="icon-btn only-m" data-act="search" type="button" aria-label="بحث"><svg class="i"><use href="#i-search"/></svg></button>
+          <button class="icon-btn" data-act="alerts" type="button" aria-label="التنبيهات" id="bell"><svg class="i"><use href="#i-bell"/></svg></button>
+          <button class="btn primary sm only-d" data-act="quick" type="button"><svg class="i"><use href="#i-plus"/></svg>إضافة</button>
+        </div>
+      </header>
+      <main class="view" id="view" tabindex="-1"></main>
+    </div>
+    <nav class="bnav" id="bnav" aria-label="التنقل"></nav>
+  </div>
+  <div id="modals"></div>
+  <div class="toast-wrap" id="toasts" aria-live="polite"></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-oil" viewBox="0 0 24 24"><path d="M12 3.5c3.2 4.2 5.2 6.9 5.2 9.7a5.2 5.2 0 0 1-10.4 0c0-2.8 2-5.5 5.2-9.7z"/><path d="M9.6 14.2a2.5 2.5 0 0 0 2.4 2.3"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z"/></symbol>
+    <symbol id="i-inspect" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9.5 4.5V3h5v1.5M9 13l2.2 2.2L15.5 11"/></symbol>
+    <symbol id="i-repair" viewBox="0 0 24 24"><path d="M14.8 3.6a5 5 0 0 0-4.6 6.8L3.8 16.8a1.9 1.9 0 0 0 2.7 2.7l6.4-6.4a5 5 0 0 0 6.8-4.6l-2.9 2.1-2.6-.6-.6-2.6z"/></symbol>
+    <symbol id="i-wash" viewBox="0 0 24 24"><path d="M7.5 13.5a3 3 0 0 0 6 0c0-2-3-5.5-3-5.5s-3 3.5-3 5.5zM15.5 7.5a2 2 0 0 0 4 0c0-1.3-2-3.7-2-3.7s-2 2.4-2 3.7z"/><path d="M4 20h16"/></symbol>
+    <symbol id="i-tires" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 3.5V9M12 15v5.5M3.5 12H9M15 12h5.5"/></symbol>
+    <symbol id="i-brakes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.3"/><path d="M17.8 5.2a9.6 9.6 0 0 1 0 13.6" stroke-width="2.6"/></symbol>
+    <symbol id="i-ac" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6 12 7l2.4-2.4M9.6 19.4 12 17l2.4 2.4"/></symbol>
+    <symbol id="i-electric" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.4h5.7L10.4 21l8-10.4h-5.8z"/></symbol>
+    <symbol id="i-other" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18" cy="12" r="1.4"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 19h4L19.2 8.8l-4-4L5 15z"/><path d="m13.2 6.8 4 4"/></symbol>
+    <symbol id="i-issue" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.4M12 17v.1"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9h-5.5v-6h-5v6H4z"/></symbol>
+    <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="14" rx="3"/><path d="M4 11h16M8 17.5V20M16 17.5V20M10 6.5h4"/><circle cx="8" cy="14.3" r=".8"/><circle cx="16" cy="14.3" r=".8"/></symbol>
+    <symbol id="i-tasks" viewBox="0 0 24 24"><path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="m3.8 6.5 1.3 1.3L7.4 5.4M3.8 12l1.3 1.3 2.3-2.4M3.8 17.5l1.3 1.3 2.3-2.4"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-stats" viewBox="0 0 24 24"><path d="M5 20v-8M12 20V5M19 20v-11"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h9M18 7h2M4 17h3M12 17h8"/><circle cx="15.5" cy="7" r="2.3"/><circle cx="9.5" cy="17" r="2.3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m9 5.5 6.5 6.5L9 18.5"/></symbol>
+    <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M15 5.5 8.5 12l6.5 6.5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4" rx="1"/><path d="M5 8.5V19h14V8.5M10 12.5h4"/></symbol>
+    <symbol id="i-restore" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 9M4.5 4.5V9H9"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.7"/><path d="m20.5 16-5-5-8.5 8"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 3.5-4.5"/></symbol>
+    <symbol id="i-exit" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M5 19h4L19.2 8.8l-4-4L5 15z"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="17" height="11" rx="2"/><circle cx="12" cy="12" r="2.3"/></symbol>
+  </defs>
+</svg>
+
+<script>
+(function(){
+'use strict';
+document.documentElement.lang = 'ar';
+document.documentElement.dir = 'rtl';
+
+/* =========================================================
+   Constants
+   ========================================================= */
+const TYPES = {
+  oil:{label:'تغيير زيت', icon:'oil'},
+  filter:{label:'تغيير فلتر', icon:'filter'},
+  inspect:{label:'فحص', icon:'inspect'},
+  repair:{label:'إصلاح', icon:'repair'},
+  wash:{label:'غسيل', icon:'wash'},
+  tires:{label:'إطارات', icon:'tires'},
+  brakes:{label:'فرامل', icon:'brakes'},
+  ac:{label:'مكيف', icon:'ac'},
+  electric:{label:'كهرباء', icon:'electric'},
+  other:{label:'أخرى', icon:'other'},
+  note:{label:'ملاحظة', icon:'note'}
+};
+const TYPE_ORDER = ['oil','filter','inspect','repair','wash','tires','brakes','ac','electric','other'];
+const SCHED_DEFAULT = [
+  {key:'oil', type:'oil', label:'تغيير الزيت', days:90, km:5000, critical:true},
+  {key:'brakes', type:'brakes', label:'فحص الفرامل', days:90, km:0, critical:true},
+  {key:'tires', type:'tires', label:'فحص الإطارات', days:60, km:0, critical:true},
+  {key:'inspect', type:'inspect', label:'الفحص العام', days:180, km:0, critical:true},
+  {key:'wash', type:'wash', label:'الغسيل الدوري', days:14, km:0, critical:false}
+];
+const LEVEL = {ok:'جاهز للخدمة', warn:'يحتاج متابعة', bad:'يحتاج صيانة'};
+const ISSUE_ST = {open:{t:'مفتوحة', l:'bad'}, followup:{t:'تحت المتابعة', l:'warn'}, fixed:{t:'تم الإصلاح', l:'ok'}};
+const SEV = {normal:'عادية', important:'مهمة', urgent:'عاجلة'};
+const SCHED_ST = {ok:{t:'جيد', l:'ok'}, soon:{t:'قريب', l:'warn'}, late:{t:'متأخر', l:'bad'}, none:{t:'لم يُسجّل', l:'none'}};
+const ROLES = {supervisor:'مشرف', tech:'فني', member:'عضو فريق'};
+const MEMBER_COLORS = ['#2E6B55','#8A5A2B','#3D5A80','#7A4E6E','#5B6B2F','#2E6F73','#8B4A3C'];
+const COLLS = ['members','buses','records','issues','tasks','activity'];
+const LS_ME = 'mirkab.me', LS_LOCAL = 'mirkab.local.v1', LS_SEEN = 'mirkab.seen';
+
+/* =========================================================
+   Helpers
+   ========================================================= */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon = (n, cls='') => `<svg class="i ${cls}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const clamp = (v, a=0, b=1) => Math.max(a, Math.min(b, v));
+const genId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
+const norm = s => String(s || '').toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+const nf = new Intl.NumberFormat('en-US');
+const fmtN = n => nf.format(Math.round(Number(n) || 0));
+const fmtMoney = n => fmtN(n) + ' ر.س';
+
+function ymd(d){ const z = n => String(n).padStart(2,'0'); return d.getFullYear() + '-' + z(d.getMonth()+1) + '-' + z(d.getDate()); }
+const todayStr = () => ymd(new Date());
+function parseYmd(s){ const p = String(s||'').split('-').map(Number); return new Date(p[0], (p[1]||1)-1, p[2]||1); }
+function addDays(s, n){ const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); }
+function diffDays(a, b){ return Math.round((parseYmd(a) - parseYmd(b)) / 864e5); }
+const LOC = 'ar-SA-u-ca-gregory-nu-latn';
+const dfLong = new Intl.DateTimeFormat(LOC, {day:'numeric', month:'long', year:'numeric'});
+const dfShort = new Intl.DateTimeFormat(LOC, {day:'numeric', month:'long'});
+const dfWeek = new Intl.DateTimeFormat(LOC, {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+const dfNum = new Intl.DateTimeFormat('en-GB', {day:'numeric', month:'numeric', year:'numeric'});
+const rtf = new Intl.RelativeTimeFormat('ar-u-nu-latn', {numeric:'auto'});
+function fmtDate(s){ if (!s) return '—'; const d = parseYmd(s); return d.getFullYear() === new Date().getFullYear() ? dfShort.format(d) : dfLong.format(d); }
+const fmtDateLong = s => s ? dfLong.format(parseYmd(s)) : '—';
+const fmtDateNum = s => s ? dfNum.format(parseYmd(s)) : '—';
+function nDays(n){ n = Math.abs(n); if (n === 1) return 'يوم'; if (n === 2) return 'يومين'; if (n <= 10) return n + ' أيام'; return n + ' يوم'; }
+function timeAgo(ms){
+  if (!ms) return '—';
+  const s = (Date.now() - ms) / 1000;
+  if (s < 50) return 'الآن';
+  if (s < 3600) return rtf.format(-Math.round(s/60), 'minute');
+  if (s < 86400) return rtf.format(-Math.round(s/3600), 'hour');
+  const days = diffDays(todayStr(), ymd(new Date(ms)));
+  if (days <= 6) return rtf.format(-days, 'day');
+  return fmtDate(ymd(new Date(ms)));
+}
+function dayLabel(dateStr){
+  const n = diffDays(todayStr(), dateStr);
+  if (n === 0) return 'اليوم';
+  if (n === 1) return 'أمس';
+  if (n === 2) return 'قبل يومين';
+  if (n > 2 && n <= 6) return 'قبل ' + n + ' أيام';
+  if (n < 0) return fmtDate(dateStr);
+  return fmtDate(dateStr);
+}
+function dayHeading(dateStr){
+  const n = diffDays(todayStr(), dateStr);
+  if (n === 0) return 'اليوم';
+  if (n === 1) return 'أمس';
+  return dfWeek.format(parseYmd(dateStr));
+}
+function groupBy(arr, k){ const o = {}; for (const x of arr){ (o[x[k]] = o[x[k]] || []).push(x); } return o; }
+
+/* =========================================================
+   State
+   ========================================================= */
+const S = {
+  data: {members:[], buses:[], records:[], issues:[], tasks:[], activity:[]},
+  mode: 'loading', me: null, uid: null, readOnly: false,
+  ui: {
+    busTab:'overview', busId:null, busFilter:'all', busQ:'',
+    maint:{bus:'', type:'', by:'', from:'', to:'', q:''},
+    issues:{status:'active', bus:'', sev:'', q:''},
+    log:{bus:'', kind:'', by:'', from:'', to:'', q:''},
+  },
+  fileCache: {}
+};
+let db = null, userCap = null, dataVer = 0, D = null, Dver = -1;
+const loaded = new Set();
+
+/* =========================================================
+   Store (shared db, with a local fallback)
+   ========================================================= */
+const LS_TEAM = 'mirkab.team';
+const TEAM_RE = /^[A-Za-z0-9-]{8,40}$/;
+function teamCode(){
+  try {
+    const u = new URL(location.href);
+    const t = (u.searchParams.get('t') || '').trim();
+    if (t && TEAM_RE.test(t)){ lsSet(LS_TEAM, t); u.searchParams.delete('t'); history.replaceState(null, '', u.pathname + u.search + u.hash); }
+  } catch(e){}
+  const c = lsGet(LS_TEAM, null);
+  return c && TEAM_RE.test(c) ? c : null;
+}
+function newTeamCode(){
+  const a = 'abcdefghjkmnpqrstuvwxyz23456789'; let out = 'mk-';
+  const r = new Uint32Array(9); crypto.getRandomValues(r);
+  for (let i = 0; i < 9; i++) out += a[r[i] % a.length];
+  return out;
+}
+const inviteLink = () => location.origin + location.pathname + '?t=' + encodeURIComponent(S.team || '');
+async function initStore(){
+  const cfg = window.MIRKAB_FIREBASE;
+  if (!cfg || !cfg.apiKey || !window.firebase){ S.mode = 'nocfg'; return; }
+  S.team = teamCode();
+  if (!S.team){ S.mode = 'noteam'; return; }
+  if (!firebase.apps.length) firebase.initializeApp(cfg);
+  const fsdb = firebase.firestore();
+  try { fsdb.settings({ignoreUndefinedProperties: true}); } catch(e){}
+  try { await fsdb.enablePersistence({synchronizeTabs: true}); } catch(e){}
+  const base = 'teams/' + S.team + '/';
+  db = { collection: p => fsdb.collection(base + p), doc: p => fsdb.doc(base + p) };
+  {
+    S.mode = 'db';
+    for (const coll of COLLS){
+      let q = db.collection(coll);
+      if (coll === 'activity') q = q.orderBy('at','desc').limit(500);
+      q.onSnapshot(snap => {
+        S.data[coll] = snap.docs.map(d => Object.assign({}, d.data(), {id: d.id}));
+        loaded.add(coll); bump();
+      }, err => { console.warn('[mirkab] subscription', coll, err && err.code); if (err && err.code === 'permission-denied') S.denied = true; loaded.add(coll); bump(); });
+    }
+    await new Promise(res => {
+      const t0 = Date.now();
+      (function wait(){ if (loaded.size >= COLLS.length || Date.now() - t0 > 6000) res(); else setTimeout(wait, 60); })();
+    });
+  }
+}
+function saveLocal(){}
+function writeError(e){
+  const code = e && e.code;
+  if (code === 'permission-denied') return 'ما قدرنا نحفظ: رمز الفريق غير مقبول. افتح رابط الدعوة من جديد.';
+  if (code === 'invalid_argument' || code === 'not_granted') return 'ما عندك صلاحية تعديل هنا. اطلب من صاحب الرابط يعطيك صلاحية «مساهم» أو أعلى.';
+  if (code === 'quota_exceeded') return 'امتلأت مساحة التخزين. أرشف أو احذف بعض المرفقات القديمة.';
+  return 'ما قدرنا نحفظ. تأكد من الاتصال وحاول مرة ثانية.';
+}
+async function putDoc(coll, id, data){
+  if (S.mode === 'db') { await db.collection(coll).doc(id).set(data); return id; }
+  const arr = S.data[coll] = S.data[coll] || [];
+  const i = arr.findIndex(x => x.id === id);
+  const doc = Object.assign({}, data, {id});
+  if (i >= 0) arr[i] = doc; else arr.push(doc);
+  saveLocal(); bump(); return id;
+}
+async function patchDoc(coll, id, patch){
+  if (S.mode === 'db') { await db.collection(coll).doc(id).update(patch); return; }
+  const arr = S.data[coll] || [];
+  const i = arr.findIndex(x => x.id === id);
+  if (i >= 0) arr[i] = Object.assign({}, arr[i], patch);
+  saveLocal(); bump();
+}
+async function delDoc(coll, id){
+  if (S.mode === 'db') { await db.collection(coll).doc(id).delete(); return; }
+  S.data[coll] = (S.data[coll] || []).filter(x => x.id !== id);
+  saveLocal(); bump();
+}
+async function logAct(kind, o){
+  const id = genId('a');
+  const doc = Object.assign({at: Date.now(), by: S.me, kind}, o);
+  Object.keys(doc).forEach(k => doc[k] === undefined && delete doc[k]);
+  try { await putDoc('activity', id, doc); } catch(e){ console.warn('[mirkab] log failed', e); }
+}
+async function fetchFiles(field, value){
+  const key = field + ':' + value;
+  if (S.fileCache[key]) return S.fileCache[key];
+  let list = [];
+  if (S.mode === 'db'){
+    try { const snap = await db.collection('files').where(field, '==', value).get(); list = snap.docs.map(d => Object.assign({}, d.data(), {id:d.id})); }
+    catch(e){ list = []; }
+  } else list = (S.data.files || []).filter(f => f[field] === value);
+  list = list.filter(f => !f.archived).sort((a,b) => (b.at||0) - (a.at||0));
+  S.fileCache[key] = list;
+  return list;
+}
+async function saveFiles(pending, meta){
+  for (const p of pending){
+    const id = genId('f');
+    await putDoc('files', id, Object.assign({data:p.data, w:p.w, h:p.h, name:p.name || '', at:Date.now(), by:S.me}, meta));
+  }
+  S.fileCache = {};
+}
+function compressImage(file){
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onerror = () => reject(new Error('read'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('decode'));
+      img.onload = () => {
+        let max = 1280, q = 0.74, out = '';
+        for (let pass = 0; pass < 6; pass++){
+          const sc = Math.min(1, max / Math.max(img.width, img.height));
+          const w = Math.round(img.width * sc), h = Math.round(img.height * sc);
+          const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          out = cv.toDataURL('image/jpeg', q);
+          if (out.length < 220000) return resolve({data: out, w, h, name: file.name});
+          max = Math.round(max * 0.8); q = Math.max(0.5, q - 0.06);
+        }
+        resolve({data: out, w: 0, h: 0, name: file.name});
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
+/* =========================================================
+   Derived data
+   ========================================================= */
+function bump(){ dataVer++; scheduleRender(); }
+function getD(){ if (Dver !== dataVer || !D || D.t !== todayStr()){ D = derive(); Dver = dataVer; } return D; }
+function busSort(a, b){
+  const na = parseFloat(a.code), nb = parseFloat(b.code);
+  if (!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb;
+  return String(a.name).localeCompare(String(b.name), 'ar');
+}
+function schedState(s, recs, km, t){
+  const last = recs.find(r => r.type === s.type) || null;
+  const days = Number(s.days) || 0, kmInt = Number(s.km) || 0;
+  if (!last) return Object.assign({}, s, {state:'none', last:null, progress:0});
+  const nextDate = days ? addDays(last.date, days) : null;
+  const daysLeft = nextDate ? diffDays(nextDate, t) : null;
+  const lastKm = Number(last.km) || 0;
+  const nextKm = (kmInt && lastKm) ? lastKm + kmInt : null;
+  const kmLeft = nextKm != null ? nextKm - km : null;
+  const soonD = Math.max(3, Math.min(14, Math.round(days * 0.15)));
+  const soonK = kmInt ? Math.min(1000, Math.round(kmInt * 0.1)) : 0;
+  let state = 'ok';
+  if ((daysLeft != null && daysLeft < 0) || (kmLeft != null && kmLeft <= 0)) state = 'late';
+  else if ((daysLeft != null && daysLeft <= soonD) || (kmLeft != null && kmLeft <= soonK)) state = 'soon';
+  const pD = days ? clamp(diffDays(t, last.date) / days) : 0;
+  const pK = nextKm ? clamp((km - lastKm) / kmInt) : 0;
+  return Object.assign({}, s, {state, last, nextDate, daysLeft, nextKm, kmLeft, progress: Math.max(pD, pK)});
+}
+function busInfo(b, recs, iss, t){
+  const km = Math.max(Number(b.km) || 0, 0, ...recs.map(r => Number(r.km) || 0));
+  const scheds = ((b.schedules && b.schedules.length) ? b.schedules : SCHED_DEFAULT).filter(s => s.enabled !== false).map(s => schedState(s, recs, km, t));
+  const open = iss.filter(i => i.status !== 'fixed');
+  const urgent = open.filter(i => i.severity === 'urgent');
+  const lateCrit = scheds.filter(s => s.state === 'late' && s.critical !== false);
+  const soonish = scheds.filter(s => s.state === 'soon' || (s.state === 'late' && s.critical === false));
+  let level = 'ok';
+  if (urgent.length || lateCrit.length) level = 'bad';
+  else if (open.length || soonish.length) level = 'warn';
+  const last = type => recs.find(r => r.type === type) || null;
+  const stamps = [b.updatedAt || 0, b.createdAt || 0].concat(recs.map(r => r.updatedAt || r.createdAt || 0), iss.map(i => i.updatedAt || i.createdAt || 0));
+  const why = [];
+  urgent.forEach(i => why.push('مشكلة عاجلة: ' + i.title));
+  lateCrit.forEach(s => why.push(s.label + ' متأخر'));
+  if (!urgent.length) open.filter(i => i.severity !== 'urgent').slice(0, 3).forEach(i => why.push(i.title));
+  soonish.forEach(s => why.push(s.label + (s.state === 'late' ? ' متأخر' : ' قريب')));
+  return {level, km, scheds, open, urgent, lateCrit, soonish, why, lastOil:last('oil'), lastWash:last('wash'), lastUpdate: Math.max(...stamps), recs, iss};
+}
+function derive(){
+  const t = todayStr();
+  const d = S.data;
+  const memberById = {}; d.members.forEach(m => memberById[m.id] = m);
+  const busById = {}; d.buses.forEach(b => busById[b.id] = b);
+  const members = d.members.filter(m => !m.archived).sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+  const buses = d.buses.filter(b => !b.archived).sort(busSort);
+  const records = d.records.filter(r => !r.archived && busById[r.busId] && !busById[r.busId].archived)
+    .sort((a,b) => (b.date||'').localeCompare(a.date||'') || (b.createdAt||0) - (a.createdAt||0));
+  const issues = d.issues.filter(i => !i.archived && busById[i.busId] && !busById[i.busId].archived)
+    .sort((a,b) => (b.updatedAt||b.createdAt||0) - (a.updatedAt||a.createdAt||0));
+  const tasks = d.tasks.filter(x => !x.archived);
+  const recByBus = groupBy(records, 'busId'), issByBus = groupBy(issues, 'busId');
+  const info = {};
+  buses.forEach(b => info[b.id] = busInfo(b, recByBus[b.id] || [], issByBus[b.id] || [], t));
+  const counts = {total: buses.length, ok:0, warn:0, bad:0};
+  buses.forEach(b => counts[info[b.id].level]++);
+  const ctx = {t, members, memberById, buses, busById, records, issues, tasks, info, counts, recByBus, issByBus};
+  ctx.todo = buildTodo(ctx);
+  ctx.alerts = buildAlerts(ctx);
+  return ctx;
+}
+const busName = (ctx, id) => (ctx.busById[id] && ctx.busById[id].name) || 'باص';
+const memberName = (ctx, id) => (ctx.memberById[id] && ctx.memberById[id].name) || 'عضو سابق';
+function schedSub(s){
+  const parts = [];
+  if (s.state === 'late'){
+    if (s.daysLeft != null && s.daysLeft < 0) parts.push('متأخر ' + nDays(s.daysLeft));
+    if (s.kmLeft != null && s.kmLeft <= 0) parts.push('تجاوز العداد بـ ' + fmtN(-s.kmLeft) + ' كم');
+  } else if (s.state === 'soon'){
+    if (s.daysLeft != null) parts.push(s.daysLeft === 0 ? 'موعده اليوم' : 'بعد ' + nDays(s.daysLeft));
+    if (s.kmLeft != null) parts.push('باقي ' + fmtN(s.kmLeft) + ' كم');
+  }
+  return parts.join(' · ');
+}
+function buildTodo(ctx){
+  const items = [];
+  const t = ctx.t;
+  for (const b of ctx.buses){
+    for (const s of ctx.info[b.id].scheds){
+      if (s.state === 'late' || s.state === 'soon'){
+        const group = (s.state === 'late' && s.critical !== false) ? 'urgent' : 'soon';
+        items.push({key:'s:'+b.id+':'+s.key, group, kind:'sched', busId:b.id, icon:TYPES[s.type] ? TYPES[s.type].icon : 'inspect',
+          title: s.label + ' — ' + b.name, sub: schedSub(s), sort: s.daysLeft != null ? s.daysLeft : 0,
+          act:{act:'add-maint', bus:b.id, type:s.type}, actLabel:'تسجيل'});
+      }
+    }
+  }
+  for (const i of ctx.issues){
+    if (i.status === 'fixed') continue;
+    if (i.severity === 'urgent' || i.severity === 'important'){
+      items.push({key:'i:'+i.id, group: i.severity === 'urgent' ? 'urgent' : 'soon', kind:'issue', busId:i.busId, icon:'issue',
+        title: i.title, sub: busName(ctx, i.busId) + ' · ' + (i.severity === 'urgent' ? 'مشكلة عاجلة' : 'مشكلة مهمة') + ' · ' + ISSUE_ST[i.status].t,
+        sort: i.severity === 'urgent' ? -1000 : -500, act:{act:'open-issue', id:i.id}, actLabel:'فتح'});
+    }
+  }
+  for (const x of ctx.tasks){
+    if (x.done){
+      if (x.doneAt && Date.now() - x.doneAt < 14 * 864e5)
+        items.push({key:'t:'+x.id, group:'done', kind:'task', task:x, busId:x.busId, title:x.title, sub:(x.busId ? busName(ctx, x.busId) + ' · ' : '') + 'أنهاها ' + memberName(ctx, x.doneBy) + ' ' + timeAgo(x.doneAt), sort:-(x.doneAt||0)});
+      continue;
+    }
+    const overdue = x.due && x.due < t;
+    const group = (x.priority === 'urgent' || overdue) ? 'urgent' : 'soon';
+    let sub = x.busId ? busName(ctx, x.busId) : 'مهمة عامة';
+    if (x.due) sub += ' · ' + (overdue ? 'كان موعدها ' + fmtDate(x.due) : (x.due === t ? 'موعدها اليوم' : 'موعدها ' + fmtDate(x.due)));
+    items.push({key:'t:'+x.id, group, kind:'task', task:x, busId:x.busId, title:x.title, sub, sort: x.due ? diffDays(x.due, t) : 999});
+  }
+  for (const r of ctx.records){
+    if (r.type === 'note') continue;
+    if (diffDays(t, r.date) > 3) break;
+    items.push({key:'r:'+r.id, group:'done', kind:'rec', busId:r.busId, icon:(TYPES[r.type]||TYPES.other).icon, title: (TYPES[r.type]||TYPES.other).label + ' — ' + busName(ctx, r.busId),
+      sub:'نفّذها ' + memberName(ctx, r.by) + ' · ' + dayLabel(r.date), sort:-(r.createdAt||0), act:{act:'edit-maint', id:r.id}});
+  }
+  const g = {urgent:[], soon:[], done:[]};
+  items.forEach(x => g[x.group].push(x));
+  g.urgent.sort((a,b) => a.sort - b.sort); g.soon.sort((a,b) => a.sort - b.sort); g.done.sort((a,b) => a.sort - b.sort);
+  return g;
+}
+function buildAlerts(ctx){
+  const out = [];
+  for (const i of ctx.issues) if (i.status !== 'fixed' && i.severity === 'urgent')
+    out.push({key:'ai:'+i.id+':'+(i.updatedAt||0), level:'bad', text: busName(ctx, i.busId) + ' لديه مشكلة عاجلة: ' + i.title, sub: timeAgo(i.updatedAt || i.createdAt), act:{act:'open-issue', id:i.id}});
+  for (const b of ctx.buses) for (const s of ctx.info[b.id].scheds){
+    if (s.state === 'late') out.push({key:'as:'+b.id+':'+s.key+':late:'+(s.last && s.last.id), level: s.critical !== false ? 'bad' : 'warn', text:'تأخر موعد ' + s.label + ' في ' + b.name + '.', sub: schedSub(s), act:{act:'go', to:'bus-'+b.id}});
+    else if (s.state === 'soon') out.push({key:'as:'+b.id+':'+s.key+':soon:'+(s.last && s.last.id), level:'warn', text:'اقترب موعد ' + s.label + ' في ' + b.name + '.', sub: schedSub(s), act:{act:'go', to:'bus-'+b.id}});
+  }
+  const follow = ctx.issues.filter(i => i.status === 'followup').length;
+  if (follow) out.push({key:'af:'+follow, level:'warn', text: follow === 1 ? 'توجد مشكلة واحدة تحت المتابعة.' : 'توجد ' + follow + ' مشاكل تحت المتابعة.', sub:'', act:{act:'go', to:'issues'}});
+  const openTasks = ctx.tasks.filter(x => !x.done).length;
+  if (openTasks) out.push({key:'at:'+openTasks, level:'warn', text: openTasks === 1 ? 'توجد مهمة واحدة مفتوحة.' : 'توجد ' + openTasks + ' مهام مفتوحة.', sub:'', act:{act:'go', to:'tasks'}});
+  return out;
+}
+
+/* =========================================================
+   Small components
+   ========================================================= */
+function pill(level, text){ return `<span class="pill pill-${level}"><i class="lamp"></i>${esc(text)}</span>`; }
+const busPill = lvl => pill(lvl, LEVEL[lvl]);
+const issuePill = st => pill(ISSUE_ST[st].l, ISSUE_ST[st].t);
+const sevTag = sev => `<span class="sev sev-${sev}">${SEV[sev] || ''}</span>`;
+function plate(p){ if (!p) return ''; return `<span class="plate"><span class="k ltr">KSA</span><span>${esc(p)}</span></span>`; }
+function initials(n){ const p = String(n||'?').trim().split(/\s+/); return (p[0] || '?').slice(0,1) + (p[1] ? p[1].slice(0,1) : ''); }
+function avatar(ctx, id, cls=''){
+  const m = ctx.memberById[id];
+  const color = (m && m.color) || '#767A7E';
+  return `<span class="av ${cls}" style="background:${esc(color)}" aria-hidden="true">${esc(initials(m ? m.name : '?'))}</span>`;
+}
+function empty(title, sub, btn){
+  return `<div class="empty"><span class="emoji" aria-hidden="true">🚍</span><b>${esc(title)}</b>${sub ? `<span class="small">${esc(sub)}</span>` : ''}${btn || ''}</div>`;
+}
+function dataAttrs(o){ return Object.keys(o || {}).map(k => `data-${k}="${esc(o[k])}"`).join(' '); }
+function memberOptions(ctx, sel, withAll){
+  let h = withAll ? `<option value="">${withAll}</option>` : '';
+  ctx.members.forEach(m => h += `<option value="${esc(m.id)}" ${m.id === sel ? 'selected' : ''}>${esc(m.name)}</option>`);
+  return h;
+}
+function busOptions(ctx, sel, withAll){
+  let h = withAll ? `<option value="">${withAll}</option>` : '';
+  ctx.buses.forEach(b => h += `<option value="${esc(b.id)}" ${b.id === sel ? 'selected' : ''}>${esc(b.name)}</option>`);
+  return h;
+}
+const me = () => getD().memberById[S.me];
+const isSup = () => { const m = me(); return !!m && m.role === 'supervisor'; };
+
+/* =========================================================
+   Router + render
+   ========================================================= */
+let renderQueued = false;
+function scheduleRender(){ if (renderQueued) return; renderQueued = true; requestAnimationFrame(() => { renderQueued = false; render(); }); }
+function route(){
+  const h = (location.hash || '#home').slice(1);
+  if (h.startsWith('bus-')) return {name:'bus', id:h.slice(4)};
+  const known = ['home','buses','tasks','maint','issues','log','stats','settings'];
+  return {name: known.includes(h) ? h : 'home'};
+}
+function go(to){ if (location.hash === '#' + to) render(); else location.hash = to; }
+let lastRouteKey = '';
+function render(){
+  if (S.mode === 'loading' || !S.booted) return;
+  const ctx = getD();
+  const meM = ctx.memberById[S.me];
+  if (!meM || meM.archived){ showLogin(ctx); return; }
+  $('#boot').hidden = true; $('#login').hidden = true; $('#shell').hidden = false;
+  const r = route();
+  const key = r.name + ':' + (r.id || '');
+  const routeChanged = key !== lastRouteKey;
+  if (routeChanged && r.name === 'bus' && S.ui.busId !== r.id){ S.ui.busTab = 'overview'; S.ui.busId = r.id; }
+  // keep focus & caret across live re-renders
+  const ae = document.activeElement;
+  const focusId = ae && ae.id && $('#view').contains(ae) ? ae.id : null;
+  const selS = focusId && ae.selectionStart != null ? [ae.selectionStart, ae.selectionEnd] : null;
+
+  renderChrome(ctx, r);
+  const V = {home:viewHome, buses:viewBuses, bus:viewBus, tasks:viewTasks, maint:viewMaint, issues:viewIssues, log:viewLog, stats:viewStats, settings:viewSettings}[r.name];
+  const view = $('#view');
+  view.innerHTML = (S.denied ? `<div class="banner">${icon('issue')}<span>رمز الفريق غير مقبول، فما نقدر نقرأ البيانات. افتح رابط الدعوة من جديد أو اطلبه من المشرف.</span></div>` : '') + (S.readOnly ? `<div class="banner">${icon('issue')}<span>عندك صلاحية عرض فقط. تقدر تتصفح، لكن الحفظ يحتاج صلاحية تعديل من صاحب الرابط.</span></div>` : '') + V(ctx, r);
+  if (routeChanged){ window.scrollTo(0, 0); lastRouteKey = key; view.querySelectorAll('.anim').forEach(el => el.classList.add('rise')); }
+  if (focusId){ const el = document.getElementById(focusId); if (el){ el.focus(); if (selS && el.setSelectionRange) try { el.setSelectionRange(selS[0], selS[1]); } catch(e){} } }
+  hydrateFiles();
+}
+function renderChrome(ctx, r){
+  const urgentN = ctx.todo.urgent.length;
+  const nav = [
+    ['home','home','الرئيسية'], ['buses','bus','الباصات'], ['tasks','tasks','المهام', urgentN], ['maint','repair','الصيانة'],
+    ['issues','issue','المشاكل'], ['log','log','السجل'], ['stats','stats','الإحصائيات']
+  ];
+  const active = r.name === 'bus' ? 'buses' : r.name;
+  $('#side-nav').innerHTML = nav.map(n => `<a href="#${n[0]}" class="${active === n[0] ? 'on' : ''}" ${active === n[0] ? 'aria-current="page"' : ''}>${icon(n[1])}<span>${n[2]}</span>${n[3] ? `<span class="cnt">${n[3]}</span>` : ''}</a>`).join('');
+  const m = ctx.memberById[S.me];
+  $('#side-foot').innerHTML = `<nav class="nav"><a href="#settings" class="${active === 'settings' ? 'on' : ''}">${icon('settings')}<span>الإعدادات</span></a></nav>
+    <button class="me-chip" data-act="switch-user" type="button" title="تبديل المستخدم">${avatar(ctx, S.me, 'sm')}<span><span>${esc(m.name)}</span><small>${ROLES[m.role] || ''} · تبديل</small></span></button>`;
+  const moreOn = ['maint','issues','log','stats','settings'].includes(active);
+  $('#bnav').innerHTML = `
+    <a href="#home" class="${active === 'home' ? 'on' : ''}">${icon('home')}<span>الرئيسية</span></a>
+    <a href="#buses" class="${active === 'buses' ? 'on' : ''}">${icon('bus')}<span>الباصات</span></a>
+    <button type="button" class="fab" data-act="quick" aria-label="إضافة">${icon('plus')}</button>
+    <a href="#tasks" class="${active === 'tasks' ? 'on' : ''}">${icon('tasks')}<span>المهام</span></a>
+    <button type="button" data-act="more" class="${moreOn ? 'on' : ''}">${icon('more')}<span>المزيد</span></button>`;
+  const seen = new Set(lsGet(LS_SEEN, []));
+  const unseen = ctx.alerts.filter(a => !seen.has(a.key)).length;
+  const bell = $('#bell');
+  bell.innerHTML = icon('bell') + (unseen ? `<span class="dot">${unseen}</span>` : '');
+  bell.setAttribute('aria-label', unseen ? 'التنبيهات، ' + unseen + ' جديدة' : 'التنبيهات');
+}
+
+/* =========================================================
+   Views
+   ========================================================= */
+function busCard(ctx, b){
+  const inf = ctx.info[b.id];
+  const openN = inf.open.length;
+  return `<a class="bus-card anim" href="#bus-${esc(b.id)}" aria-label="فتح ملف ${esc(b.name)}">
+    <div class="bc-top">
+      <span class="bus-glyph emoji" aria-hidden="true">🚍</span>
+      <div class="bc-name"><h3>${esc(b.name)}</h3><div class="meta">${busPill(inf.level)}</div></div>
+    </div>
+    <dl class="facts">
+      <div><dt>آخر تغيير زيت</dt><dd>${inf.lastOil ? fmtDate(inf.lastOil.date) : '—'}</dd></div>
+      <div><dt>آخر غسيل</dt><dd>${inf.lastWash ? fmtDate(inf.lastWash.date) : '—'}</dd></div>
+      <div><dt>مشاكل مفتوحة</dt><dd class="tnum ${inf.urgent.length ? 'hot' : ''}">${openN}</dd></div>
+    </dl>
+    <div class="bc-foot"><span>آخر تحديث ${esc(timeAgo(inf.lastUpdate))}</span><span class="open">فتح الملف ←</span></div>
+  </a>`;
+}
+function todoRow(ctx, x){
+  const lvl = x.group === 'urgent' ? 'bad' : x.group === 'soon' ? 'warn' : 'ok';
+  let actBtn = '';
+  if (x.kind === 'task' && !x.task.done) actBtn = `<button class="btn sm" type="button" data-act="toggle-task" data-id="${esc(x.task.id)}">${icon('check')}تم</button>`;
+  else if (x.act && x.actLabel) actBtn = `<button class="btn sm" type="button" ${dataAttrs(x.act)}>${esc(x.actLabel)}</button>`;
+  return `<div class="todo-item">
+    <span class="tile t-${lvl}">${icon(x.icon || (x.kind === 'task' ? 'tasks' : 'issue'))}</span>
+    <div class="tx"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.sub)}</div></div>
+    ${actBtn}
+  </div>`;
+}
+function actText(ctx, a){
+  const who = memberName(ctx, a.by);
+  const T = a.title ? esc(a.title) : '';
+  const tl = a.type && TYPES[a.type] ? TYPES[a.type].label : 'صيانة';
+  const map = {
+    maint_add: ['سجّل ' + esc(who) + ' ' + tl, TYPES[a.type] ? TYPES[a.type].icon : 'repair'],
+    maint_edit: ['عدّل ' + esc(who) + ' سجل ' + tl, 'edit'],
+    maint_archive: ['أرشف ' + esc(who) + ' سجل ' + tl, 'archive'],
+    maint_restore: ['استعاد ' + esc(who) + ' سجل ' + tl, 'restore'],
+    note_add: ['كتب ' + esc(who) + ' ملاحظة: ' + T, 'note'],
+    issue_add: ['أضاف ' + esc(who) + ' مشكلة: ' + T, 'issue'],
+    issue_update: ['حدّث ' + esc(who) + ' مشكلة «' + T + '»' + (a.status && ISSUE_ST[a.status] ? ' ← ' + ISSUE_ST[a.status].t : ''), 'issue'],
+    issue_fix: ['أغلق ' + esc(who) + ' مشكلة «' + T + '» بعد الإصلاح', 'check'],
+    issue_reopen: ['أعاد ' + esc(who) + ' فتح مشكلة «' + T + '»', 'issue'],
+    issue_edit: ['عدّل ' + esc(who) + ' مشكلة «' + T + '»', 'edit'],
+    issue_archive: ['أرشف ' + esc(who) + ' مشكلة «' + T + '»', 'archive'],
+    issue_restore: ['استعاد ' + esc(who) + ' مشكلة «' + T + '»', 'restore'],
+    bus_add: ['أضاف ' + esc(who) + ' باصًا جديدًا: ' + T, 'bus'],
+    bus_edit: ['عدّل ' + esc(who) + ' بيانات ' + T, 'edit'],
+    bus_archive: ['أرشف ' + esc(who) + ' الباص ' + T, 'archive'],
+    bus_restore: ['استعاد ' + esc(who) + ' الباص ' + T, 'restore'],
+    task_add: ['أضاف ' + esc(who) + ' مهمة: ' + T, 'tasks'],
+    task_done: ['أنهى ' + esc(who) + ' مهمة: ' + T, 'check'],
+    task_undo: ['أعاد ' + esc(who) + ' فتح مهمة: ' + T, 'tasks'],
+    task_archive: ['أرشف ' + esc(who) + ' مهمة: ' + T, 'archive'],
+    member_add: ['انضم ' + T + ' إلى الفريق', 'user'],
+    member_edit: ['عدّل ' + esc(who) + ' بيانات ' + T, 'user'],
+    member_archive: ['أرشف ' + esc(who) + ' العضو ' + T, 'archive'],
+    km_update: ['حدّث ' + esc(who) + ' ممشى ' + T + (a.km ? ' إلى ' + fmtN(a.km) + ' كم' : ''), 'gauge'],
+    files_add: ['أضاف ' + esc(who) + ' مرفقات إلى ' + T, 'image']
+  };
+  const m = map[a.kind] || [esc(who) + ' — ' + T, 'other'];
+  return {html: m[0], icon: m[1]};
+}
+function actTone(kind){ kind = kind || ''; if (/fix|done/.test(kind)) return 'ok'; if (kind === 'issue_add') return 'warn'; return ''; }
+function actItem(ctx, a, showBus){
+  const tx = actText(ctx, a);
+  const bus = showBus && a.busId && ctx.busById[a.busId] ? esc(ctx.busById[a.busId].name) + ' · ' : '';
+  const kind = a.kind || '';
+  const ref = a.refId && kind.startsWith('issue') ? `data-act="open-issue" data-id="${esc(a.refId)}"` :
+              a.refId && (kind.startsWith('maint') || kind === 'note_add') ? `data-act="edit-maint" data-id="${esc(a.refId)}"` : '';
+  const inner = `<div class="t">${tx.html}</div><div class="s">${bus}${esc(timeAgo(a.at))}</div>`;
+  return `<li><span class="tile ${actTone(kind) ? 't-' + actTone(kind) : ''}">${icon(tx.icon)}</span>
+    <div>${ref ? `<button type="button" class="li-btn" ${ref}>${inner}</button>` : inner}</div></li>`;
+}
+function viewHome(ctx){
+  const m = me();
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'صباح الخير' : 'مساء الخير';
+  const c = ctx.counts;
+  if (!c.total){
+    return `<div class="hello"><div><p class="eyebrow">${esc(dfWeek.format(new Date()))}</p><h1>${greet}، ${esc(m.name)}</h1></div></div>
+      <div class="panel">${empty('ما فيه باصات مسجلة للحين', 'أضف أول باص، وبعدها سجّل عليه الصيانة والمشاكل.', `<button class="btn primary" type="button" data-act="add-bus">${icon('plus')}إضافة باص</button>`)}</div>`;
+  }
+  let lede = `عندنا ${c.total === 1 ? 'باص واحد' : c.total === 2 ? 'باصين' : c.total + ' باصات'}`;
+  if (c.ok === c.total) lede += '، وكلها جاهزة للخدمة. باص جاهز، رحلة آمنة.';
+  else {
+    const bits = [];
+    if (c.ok) bits.push(c.ok + ' جاهزة');
+    if (c.warn) bits.push(c.warn === 1 ? 'باص يحتاج متابعة' : c.warn + ' تحتاج متابعة');
+    if (c.bad) bits.push(c.bad === 1 ? 'باص يحتاج صيانة' : c.bad + ' تحتاج صيانة');
+    lede += '. ' + bits.join('، ') + '.';
+  }
+  const todo = ctx.todo.urgent.concat(ctx.todo.soon);
+  const recent = S.data.activity.slice().sort((a,b) => (b.at||0) - (a.at||0)).slice(0, 7);
+  return `
+  <div class="hello anim"><div><p class="eyebrow">${esc(dfWeek.format(new Date()))}</p><h1>${greet}، ${esc(m.name)}</h1><p class="lede">${esc(lede)}</p></div></div>
+  <section class="panel fleet anim" aria-label="ملخص الأسطول">
+    <div class="counts">
+      <div><b>${c.total}</b><span>عدد الباصات</span></div>
+      <div class="c-ok"><b>${c.ok}</b><span>جاهز للخدمة</span></div>
+      <div class="c-warn"><b>${c.warn}</b><span>يحتاج متابعة</span></div>
+      <div class="c-bad"><b>${c.bad}</b><span>يحتاج صيانة</span></div>
+    </div>
+    <div class="lot">${ctx.buses.map(b => `<a href="#bus-${esc(b.id)}" class="bay l-${ctx.info[b.id].level}" title="${esc(b.name)} — ${LEVEL[ctx.info[b.id].level]}"><i class="lamp"></i><span class="n tnum">${esc(b.code || '🚍')}</span><span class="nm">${esc(b.name)}</span></a>`).join('')}</div>
+  </section>
+  <div class="duo sec">
+    <section class="anim">
+      <div class="sec-h"><h2>ماذا علينا الآن؟</h2><a href="#tasks">كل المهام</a></div>
+      <div class="panel todo">${todo.length ? todo.slice(0, 6).map(x => todoRow(ctx, x)).join('') + (todo.length > 6 ? `<div class="todo-item"><a class="link" href="#tasks">و ${todo.length - 6} غيرها…</a></div>` : '')
+        : `<div class="todo-ok"><span class="emoji" aria-hidden="true">👌</span><div><b>ما فيه شي مستعجل اليوم.</b><div class="small muted">كل الباصات ماشية على مواعيدها.</div></div></div>`}</div>
+    </section>
+    <section class="anim">
+      <div class="sec-h"><h2>آخر ما صار</h2><a href="#log">السجل الكامل</a></div>
+      <div class="panel box">${recent.length ? `<ul class="tl">${recent.map(a => actItem(ctx, a, true)).join('')}</ul>` : empty('ما فيه نشاط للحين', 'أول عملية تسجلها بتظهر هنا.')}</div>
+    </section>
+  </div>
+  <section class="sec">
+    <div class="sec-h"><h2>الباصات</h2><a href="#buses">عرض الكل</a></div>
+    <div class="bus-grid">${ctx.buses.map(b => busCard(ctx, b)).join('')}</div>
+  </section>`;
+}
+function viewBuses(ctx){
+  const f = S.ui.busFilter, q = norm(S.ui.busQ);
+  const list = ctx.buses.filter(b => (f === 'all' || ctx.info[b.id].level === f) && (!q || norm([b.name, b.plate, b.code, b.model, b.desc].join(' ')).includes(q)));
+  const c = ctx.counts;
+  return `
+  <div class="page-head anim"><div><h1>الباصات</h1><p>كل باص، وكل تفاصيله، في مكان واحد.</p></div>
+    <button class="btn primary" type="button" data-act="add-bus">${icon('plus')}إضافة باص</button></div>
+  <div class="filters">
+    <div class="seg" role="group" aria-label="تصفية حسب الحالة">
+      ${[['all','الكل',c.total],['ok','جاهز',c.ok],['warn','متابعة',c.warn],['bad','صيانة',c.bad]].map(x => `<button type="button" class="${f === x[0] ? 'on' : ''}" data-act="bus-filter" data-v="${x[0]}">${x[1]} <span class="muted tnum">${x[2]}</span></button>`).join('')}
+    </div>
+    <label class="fsearch">${icon('search')}<span class="sr">بحث</span><input id="bus-q" type="search" placeholder="اسم الباص أو رقم اللوحة" value="${esc(S.ui.busQ)}" data-input="busQ"></label>
+  </div>
+  ${list.length ? `<div class="bus-grid">${list.map(b => busCard(ctx, b)).join('')}</div>` : `<div class="panel">${empty('ما فيه باصات بهذا الوصف', 'جرّب تغيّر البحث أو الفلتر.')}</div>`}`;
+}
+function recRow(ctx, r, showBus){
+  const t = TYPES[r.type] || TYPES.other;
+  const bits = [];
+  if (showBus) bits.push(`<span>${esc(busName(ctx, r.busId))}</span>`);
+  bits.push(`<span>${esc(fmtDate(r.date))}</span>`);
+  bits.push(`<span>${esc(memberName(ctx, r.by))}</span>`);
+  if (r.km) bits.push(`<span class="tnum">${fmtN(r.km)} كم</span>`);
+  return `<button type="button" class="row-i" data-act="edit-maint" data-id="${esc(r.id)}">
+    <span class="tile">${icon(t.icon)}</span>
+    <span style="min-width:0"><span class="t">${esc(t.label)}${r.desc ? ` <span class="muted" style="font-weight:400">— ${esc(r.desc)}</span>` : ''}</span><span class="s">${bits.join('<span aria-hidden="true">·</span>')}</span></span>
+    <span class="e">${r.cost ? `<span class="money tnum">${fmtMoney(r.cost)}</span>` : ''}${r.attachN ? `<span class="when">${icon('image')} ${r.attachN}</span>` : ''}</span>
+  </button>`;
+}
+function issueRow(ctx, i, showBus){
+  const dates = 'أضيفت ' + fmtDate(ymd(new Date(i.createdAt || Date.now()))) + (i.updatedAt && i.updatedAt !== i.createdAt ? ' · آخر تحديث ' + timeAgo(i.updatedAt) : '');
+  return `<button type="button" class="row-i" data-act="open-issue" data-id="${esc(i.id)}">
+    <span class="tile t-${ISSUE_ST[i.status].l}">${icon(i.status === 'fixed' ? 'check' : 'issue')}</span>
+    <span style="min-width:0"><span class="t">${esc(i.title)}</span><span class="s">${showBus ? `<span>${esc(busName(ctx, i.busId))}</span><span aria-hidden="true">·</span>` : ''}<span>${esc(dates)}</span><span aria-hidden="true">·</span><span>${esc(memberName(ctx, i.by))}</span></span></span>
+    <span class="e">${issuePill(i.status)}${sevTag(i.severity)}</span>
+  </button>`;
+}
+function schedRow(s, b){
+  const st = SCHED_ST[s.state];
+  const every = 'كل ' + nDays(s.days) + (Number(s.km) ? ' أو ' + fmtN(s.km) + ' كم' : '');
+  let nx = '';
+  if (s.state === 'none') nx = `<span>ما سجلنا ${esc(s.label)} لهذا الباص بعد.</span>`;
+  else {
+    const nextBits = [];
+    if (s.nextDate) nextBits.push(fmtDateLong(s.nextDate));
+    if (s.nextKm) nextBits.push('عند ' + fmtN(s.nextKm) + ' كم');
+    nx = `<span>آخر تنفيذ: ${fmtDateNum(s.last.date)}</span><span>القادم: ${esc(nextBits.join(' أو '))}</span>`;
+  }
+  return `<div class="sch">
+    <span class="tile t-${st.l === 'none' ? '' : st.l}">${icon(TYPES[s.type] ? TYPES[s.type].icon : 'inspect')}</span>
+    <div>
+      <div class="hd"><span><span class="nm">${esc(s.label)}</span> <span class="every">${esc(every)}</span></span>${pill(st.l, st.t + (s.state === 'late' || s.state === 'soon' ? ' · ' + schedSub(s) : ''))}</div>
+      <div class="lane-bar st-${s.state}" role="img" aria-label="${esc(s.label)}: ${Math.round((s.progress||0)*100)}٪ من الفترة"><b style="width:${Math.round((s.progress||0)*100)}%"></b></div>
+      <div class="nx">${nx}<button type="button" class="link" data-act="add-maint" data-bus="${esc(b.id)}" data-type="${esc(s.type)}">تسجيل الآن</button></div>
+    </div>
+  </div>`;
+}
+function viewBus(ctx, r){
+  const b = ctx.busById[r.id];
+  if (!b || b.archived) return `<a class="back" href="#buses">${icon('back')}الباصات</a><div class="panel">${empty('هذا الباص غير موجود', 'يمكن انأرشف أو انحذف.', '<a class="btn" href="#buses">رجوع للباصات</a>')}</div>`;
+  const inf = ctx.info[b.id];
+  const tab = S.ui.busTab;
+  let micro = '';
+  if (inf.level === 'ok') micro = inf.open.length ? 'جاهز، مع ملاحظات بسيطة.' : 'الباص نظيف من المشاكل 👌';
+  else if (inf.level === 'bad') micro = 'هذا الباص يحتاج انتباه.';
+  else micro = 'فيه أشياء تحتاج متابعة.';
+  const oilDays = inf.lastOil ? diffDays(ctx.t, inf.lastOil.date) : null;
+  const washDays = inf.lastWash ? diffDays(ctx.t, inf.lastWash.date) : null;
+  const metaBits = [];
+  if (b.code) metaBits.push(`<span class="code">رقم ${esc(b.code)}</span>`);
+  if (b.plate) metaBits.push(plate(b.plate));
+  if (b.model) metaBits.push(`<span>${esc(b.model)}${b.year ? ' · ' + esc(b.year) : ''}</span>`);
+  else if (b.year) metaBits.push(`<span>موديل ${esc(b.year)}</span>`);
+  metaBits.push(`<span>آخر تحديث ${esc(timeAgo(inf.lastUpdate))}</span>`);
+  const kmStr = String(Math.round(inf.km || 0)).padStart(6, '0');
+  const tabs = [['overview','نظرة عامة'], ['maint','الصيانة', inf.recs.filter(x => x.type !== 'note').length], ['issues','المشاكل', inf.iss.length], ['log','السجل'], ['files','المرفقات']];
+  let body = '';
+  if (tab === 'overview'){
+    const follow = inf.open.slice().sort((a,b2) => ['urgent','important','normal'].indexOf(a.severity) - ['urgent','important','normal'].indexOf(b2.severity));
+    const dueS = inf.scheds.filter(s => s.state === 'late' || s.state === 'soon');
+    const tl = inf.recs.slice(0, 6);
+    body = `<div class="ov">
+      <section class="panel box anim"><h3><span>ماذا يحدث لهذا الباص؟</span><button class="link" type="button" data-act="bus-tab" data-v="log">سجل الباص الكامل</button></h3>
+        ${tl.length ? `<ul class="tl">${tl.map(x => `<li><span class="tile">${icon((TYPES[x.type]||TYPES.other).icon)}</span><div><button type="button" class="li-btn" data-act="edit-maint" data-id="${esc(x.id)}"><div class="row"><span class="t">${esc(x.type === 'note' ? 'ملاحظة' : TYPES[x.type].label)}</span><span class="when">${esc(dayLabel(x.date))}</span></div>${x.desc ? `<div class="d">${esc(x.desc)}</div>` : ''}<div class="s">تم بواسطة ${esc(memberName(ctx, x.by))}${x.cost ? ' · ' + fmtMoney(x.cost) : ''}</div></button></div></li>`).join('')}</ul>`
+          : empty('ما سجلنا أي عمليات صيانة لهذا الباص حتى الآن.', '', `<button class="btn" type="button" data-act="add-maint" data-bus="${esc(b.id)}">${icon('plus')}إضافة صيانة</button>`)}
+      </section>
+      <div style="display:grid;gap:18px;align-content:start">
+        <section class="panel box anim"><h3><span>يحتاج متابعة</span>${(follow.length || dueS.length) ? `<span class="muted xs">${follow.length + dueS.length}</span>` : ''}</h3>
+          ${(follow.length || dueS.length) ? `<div class="rows" style="margin:-4px -16px -16px">${follow.map(i => issueRow(ctx, i, false)).join('')}${dueS.map(s => `<button type="button" class="row-i" data-act="add-maint" data-bus="${esc(b.id)}" data-type="${esc(s.type)}"><span class="tile t-${SCHED_ST[s.state].l}">${icon(TYPES[s.type].icon)}</span><span><span class="t">${esc(s.label)}</span><span class="s">${esc(schedSub(s))}</span></span><span class="e">${pill(SCHED_ST[s.state].l, SCHED_ST[s.state].t)}</span></button>`).join('')}</div>`
+            : empty('ما فيه مشاكل مفتوحة', 'الباص جاهز للخدمة.')}
+        </section>
+        <section class="panel box anim"><h3><span>الصيانة الدورية</span><button class="link" type="button" data-act="edit-bus" data-id="${esc(b.id)}">تعديل المواعيد</button></h3>
+          ${inf.scheds.length ? `<div class="sched">${inf.scheds.map(s => schedRow(s, b)).join('')}</div>` : '<p class="muted small">ما فيه مهام دورية مفعّلة لهذا الباص.</p>'}
+        </section>
+      </div>
+    </div>`;
+  } else if (tab === 'maint'){
+    const recs = inf.recs.filter(x => x.type !== 'note');
+    body = recs.length ? `<div class="panel rows">${recs.map(x => recRow(ctx, x, false)).join('')}</div>`
+      : `<div class="panel">${empty('ما سجلنا أي عمليات صيانة لهذا الباص حتى الآن.', '', `<button class="btn primary" type="button" data-act="add-maint" data-bus="${esc(b.id)}">${icon('plus')}إضافة صيانة</button>`)}</div>`;
+  } else if (tab === 'issues'){
+    const open = inf.iss.filter(i => i.status !== 'fixed'), done = inf.iss.filter(i => i.status === 'fixed');
+    body = `<div class="sec-h" style="margin-top:0"><h2>الحالية</h2><button class="btn sm" type="button" data-act="add-issue" data-bus="${esc(b.id)}">${icon('plus')}إضافة مشكلة</button></div>
+      ${open.length ? `<div class="panel rows">${open.map(i => issueRow(ctx, i, false)).join('')}</div>` : `<div class="panel">${empty('ما فيه مشاكل مفتوحة', 'الباص جاهز للخدمة.')}</div>`}
+      <div class="sec"><div class="sec-h"><h2>تم إصلاحها سابقًا</h2><span class="muted xs">${done.length}</span></div>
+      ${done.length ? `<div class="panel rows">${done.map(i => issueRow(ctx, i, false)).join('')}</div>` : '<p class="muted small">ما فيه مشاكل مغلقة بعد.</p>'}</div>`;
+  } else if (tab === 'log'){
+    const acts = S.data.activity.filter(a => a.busId === b.id).sort((x,y) => (y.at||0) - (x.at||0));
+    body = acts.length ? `<div class="panel box">${logList(ctx, acts, false)}</div>` : `<div class="panel">${empty('ما فيه نشاط على هذا الباص بعد.', '')}</div>`;
+  } else if (tab === 'files'){
+    body = `<div class="panel box"><div data-files="busId:${esc(b.id)}"><div class="mini-loader"><span class="emoji" aria-hidden="true">🚍</span>نجيب المرفقات...</div></div></div>`;
+  }
+  return `
+  <a class="back" href="#buses">${icon('back')}الباصات</a>
+  <div class="bus-head anim">
+    <span class="emoji-xl emoji" aria-hidden="true">🚍</span>
+    <div class="nm"><h1>${esc(b.name)}</h1><div class="meta">${metaBits.join('')}</div>${b.desc ? `<p class="small muted" style="margin-top:6px">${esc(b.desc)}</p>` : ''}</div>
+    <div class="acts">
+      <button class="btn primary" type="button" data-act="add-maint" data-bus="${esc(b.id)}">${icon('plus')}إضافة صيانة</button>
+      <button class="btn" type="button" data-act="add-issue" data-bus="${esc(b.id)}">${icon('issue')}إضافة مشكلة</button>
+      <button class="btn ghost" type="button" data-act="edit-bus" data-id="${esc(b.id)}" aria-label="تعديل بيانات الباص">${icon('edit')}<span class="only-d">تعديل</span></button>
+    </div>
+  </div>
+  <section class="status-hero s-${inf.level} anim" aria-label="الحالة الحالية">
+    <span class="big-lamp"><i></i></span>
+    <div><p class="eyebrow">الحالة الحالية</p><h2>${LEVEL[inf.level]}</h2><p class="small" style="color:var(--ink-2)">${esc(micro)}</p>
+      ${inf.why.length && inf.level !== 'ok' ? `<div class="why">${inf.why.slice(0, 5).map(w => `<span>${esc(w)}</span>`).join('')}</div>` : ''}</div>
+    <div class="odo">${icon('gauge')}<span class="odo-d" aria-label="${fmtN(inf.km)} كيلومتر">${kmStr.split('').map(d => `<i>${d}</i>`).join('')}</span><span>ممشى الباص (كم)${b.kmAt ? ' · ' + esc(timeAgo(b.kmAt)) : ''}</span><button type="button" class="link" data-act="odo" data-id="${esc(b.id)}">تحديث الممشى</button></div>
+  </section>
+  <div class="indic anim">
+    <div><div class="l">${icon('oil')}آخر زيت</div><div class="v">${inf.lastOil ? fmtDate(inf.lastOil.date) : '—'}</div><div class="x">${oilDays != null ? (oilDays === 0 ? 'اليوم' : 'قبل ' + nDays(oilDays)) : 'لم يُسجّل'}</div></div>
+    <div><div class="l">${icon('wash')}آخر غسيل</div><div class="v">${inf.lastWash ? fmtDate(inf.lastWash.date) : '—'}</div><div class="x">${washDays != null ? (washDays === 0 ? 'اليوم' : 'قبل ' + nDays(washDays)) : 'لم يُسجّل'}</div></div>
+    <div><div class="l">${icon('issue')}مشاكل مفتوحة</div><div class="v tnum ${inf.urgent.length ? 'hot' : ''}">${inf.open.length}</div><div class="x">${inf.urgent.length ? inf.urgent.length + ' عاجلة' : inf.open.length ? 'بدون عاجل' : 'نظيف'}</div></div>
+  </div>
+  <div class="tabs" role="tablist">${tabs.map(t => `<button type="button" role="tab" aria-selected="${tab === t[0]}" class="${tab === t[0] ? 'on' : ''}" data-act="bus-tab" data-v="${t[0]}">${t[1]}${t[2] != null ? `<span class="c">${t[2]}</span>` : ''}</button>`).join('')}</div>
+  <div class="tab-body">${body}</div>`;
+}
+function viewTasks(ctx){
+  const g = ctx.todo;
+  const col = (key, title, items, emptyMsg) => `<section class="tg tg-${key} anim"><h2><i class="lamp"></i>${title}<span class="n">${items.length}</span></h2>
+    <div class="panel">${items.length ? items.map(x => taskRow(ctx, x)).join('') : `<div class="empty" style="padding:22px 16px"><span class="small">${emptyMsg}</span></div>`}</div></section>`;
+  return `
+  <div class="page-head anim"><div><h1>المهام</h1><p>كل اللي يحتاج شغل، بدون ما تفتح كل باص.</p></div>
+    <button class="btn primary" type="button" data-act="add-task">${icon('plus')}مهمة جديدة</button></div>
+  <div class="tgroups">
+    ${col('urgent', 'عاجل', g.urgent, 'ما فيه شي عاجل. ممتاز.')}
+    ${col('soon', 'قريب', g.soon, 'ما فيه مواعيد قريبة.')}
+    ${col('done', 'مكتمل', g.done, 'المهام المكتملة آخر أسبوعين تظهر هنا.')}
+  </div>`;
+}
+function taskRow(ctx, x){
+  if (x.kind === 'task'){
+    const t = x.task;
+    return `<div class="task ${t.done ? 'done' : ''}">
+      <input type="checkbox" class="chk" id="chk-${esc(t.id)}" ${t.done ? 'checked' : ''} data-act="toggle-task" data-id="${esc(t.id)}" aria-label="${t.done ? 'إعادة فتح' : 'إنهاء'}: ${esc(t.title)}">
+      <div class="tx"><label for="chk-${esc(t.id)}" class="t">${esc(t.title)}</label><div class="s">${esc(x.sub)}</div></div>
+      <button class="icon-btn" type="button" data-act="edit-task" data-id="${esc(t.id)}" aria-label="تعديل المهمة">${icon('edit')}</button>
+    </div>`;
+  }
+  const lvl = x.group === 'urgent' ? 'bad' : x.group === 'soon' ? 'warn' : 'ok';
+  return `<div class="task"><span class="tile t-${lvl}" style="width:32px;height:32px">${icon(x.icon)}</span>
+    <div class="tx"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.sub)}</div></div>
+    ${x.act ? `<button class="btn sm" type="button" ${dataAttrs(x.act)}>${x.actLabel ? esc(x.actLabel) : 'عرض'}</button>` : ''}</div>`;
+}
+function inRange(dateStr, from, to){ return (!from || dateStr >= from) && (!to || dateStr <= to); }
+function viewMaint(ctx){
+  const f = S.ui.maint, q = norm(f.q);
+  const list = ctx.records.filter(r => r.type !== 'note' && (!f.bus || r.busId === f.bus) && (!f.type || r.type === f.type) && (!f.by || r.by === f.by) && inRange(r.date, f.from, f.to)
+    && (!q || norm([TYPES[r.type].label, r.desc, r.notes, busName(ctx, r.busId), memberName(ctx, r.by), (ctx.busById[r.busId]||{}).plate].join(' ')).includes(q)));
+  const total = list.reduce((s, r) => s + (Number(r.cost) || 0), 0);
+  const months = groupBy(list.map(r => Object.assign({}, r, {mon: r.date.slice(0,7)})), 'mon');
+  return `
+  <div class="page-head anim"><div><h1>الصيانة</h1><p>كل عمليات الصيانة على كل الباصات.</p></div>
+    <button class="btn primary" type="button" data-act="add-maint">${icon('plus')}إضافة صيانة</button></div>
+  <div class="filters">
+    <label class="fsearch">${icon('search')}<span class="sr">بحث</span><input id="m-q" type="search" placeholder="بحث في الوصف والملاحظات" value="${esc(f.q)}" data-input="maint.q"></label>
+    <select id="m-bus" class="fsel ${f.bus ? 'set' : ''}" data-filter="maint.bus" aria-label="الباص">${busOptions(ctx, f.bus, 'كل الباصات')}</select>
+    <select id="m-type" class="fsel ${f.type ? 'set' : ''}" data-filter="maint.type" aria-label="نوع العملية"><option value="">كل الأنواع</option>${TYPE_ORDER.map(k => `<option value="${k}" ${f.type === k ? 'selected' : ''}>${TYPES[k].label}</option>`).join('')}</select>
+    <select id="m-by" class="fsel ${f.by ? 'set' : ''}" data-filter="maint.by" aria-label="المنفذ">${memberOptions(ctx, f.by, 'كل الفريق')}</select>
+    <input id="m-from" class="fdate" type="date" value="${esc(f.from)}" data-filter="maint.from" aria-label="من تاريخ">
+    <input id="m-to" class="fdate" type="date" value="${esc(f.to)}" data-filter="maint.to" aria-label="إلى تاريخ">
+    ${(f.bus || f.type || f.by || f.from || f.to || f.q) ? `<button class="btn ghost sm" type="button" data-act="clear-filters" data-v="maint">مسح الفلاتر</button>` : ''}
+  </div>
+  <p class="res-n">${list.length} عملية${total ? ' · إجمالي التكلفة ' + fmtMoney(total) : ''}</p>
+  ${list.length ? Object.keys(months).sort().reverse().map(mon => `<div class="day-h">${esc(new Intl.DateTimeFormat(LOC, {month:'long', year:'numeric'}).format(parseYmd(mon + '-01')))}</div><div class="panel rows">${months[mon].map(r => recRow(ctx, r, true)).join('')}</div>`).join('')
+    : `<div class="panel">${empty('ما فيه عمليات بهذا الوصف', 'جرّب تغيّر الفلاتر.')}</div>`}`;
+}
+function viewIssues(ctx){
+  const f = S.ui.issues, q = norm(f.q);
+  const stOk = i => f.status === 'all' || (f.status === 'active' ? i.status !== 'fixed' : i.status === f.status);
+  const list = ctx.issues.filter(i => stOk(i) && (!f.bus || i.busId === f.bus) && (!f.sev || i.severity === f.sev)
+    && (!q || norm([i.title, i.desc, i.fixNotes, busName(ctx, i.busId), memberName(ctx, i.by)].join(' ')).includes(q)));
+  const sevRank = {urgent:0, important:1, normal:2};
+  if (f.status !== 'fixed') list.sort((a,b) => (a.status === 'fixed') - (b.status === 'fixed') || sevRank[a.severity] - sevRank[b.severity] || (b.updatedAt||0) - (a.updatedAt||0));
+  const n = st => ctx.issues.filter(i => st === 'active' ? i.status !== 'fixed' : st === 'all' ? true : i.status === st).length;
+  return `
+  <div class="page-head anim"><div><h1>المشاكل</h1><p>كل مشكلة حالة قابلة للمتابعة، وما تنحذف بعد الإصلاح.</p></div>
+    <button class="btn primary" type="button" data-act="add-issue">${icon('plus')}إضافة مشكلة</button></div>
+  <div class="filters">
+    <div class="seg" role="group" aria-label="الحالة">${[['active','المفتوحة'],['open','مفتوحة'],['followup','تحت المتابعة'],['fixed','تم الإصلاح'],['all','الكل']].map(x => `<button type="button" class="${f.status === x[0] ? 'on' : ''}" data-act="issue-filter" data-v="${x[0]}">${x[1]} <span class="muted tnum">${n(x[0])}</span></button>`).join('')}</div>
+    <select id="i-bus" class="fsel ${f.bus ? 'set' : ''}" data-filter="issues.bus" aria-label="الباص">${busOptions(ctx, f.bus, 'كل الباصات')}</select>
+    <select id="i-sev" class="fsel ${f.sev ? 'set' : ''}" data-filter="issues.sev" aria-label="الأهمية"><option value="">كل الدرجات</option>${Object.keys(SEV).map(k => `<option value="${k}" ${f.sev === k ? 'selected' : ''}>${SEV[k]}</option>`).join('')}</select>
+    <label class="fsearch">${icon('search')}<span class="sr">بحث</span><input id="i-q" type="search" placeholder="بحث في المشاكل" value="${esc(f.q)}" data-input="issues.q"></label>
+  </div>
+  ${list.length ? `<div class="panel rows">${list.map(i => issueRow(ctx, i, true)).join('')}</div>` : `<div class="panel">${empty(f.status === 'active' ? 'ما فيه مشاكل مفتوحة' : 'ما فيه مشاكل بهذا الوصف', f.status === 'active' ? 'كل الباصات نظيفة من المشاكل 👌' : 'جرّب تغيّر الفلاتر.')}</div>`}`;
+}
+const KIND_GROUPS = {km:'الممشى', maint:'الصيانة', issue:'المشاكل', task:'المهام', note:'الملاحظات', bus:'الباصات', member:'الفريق'};
+function logList(ctx, acts, showBus){
+  const days = [];
+  let cur = null;
+  for (const a of acts){
+    const d = ymd(new Date(a.at || 0));
+    if (!cur || cur.d !== d){ cur = {d, items:[]}; days.push(cur); }
+    cur.items.push(a);
+  }
+  return days.map(g => `<div class="day-h">${esc(dayHeading(g.d))}</div><ul class="tl">${g.items.map(a => actItem(ctx, a, showBus)).join('')}</ul>`).join('');
+}
+function viewLog(ctx){
+  const f = S.ui.log, q = norm(f.q);
+  const acts = S.data.activity.slice().sort((a,b) => (b.at||0) - (a.at||0)).filter(a => {
+    if (f.bus && a.busId !== f.bus) return false;
+    if (f.by && a.by !== f.by) return false;
+    if (f.kind && !(a.kind || '').startsWith(f.kind)) return false;
+    const d = ymd(new Date(a.at || 0));
+    if (!inRange(d, f.from, f.to)) return false;
+    if (q){ const tx = actText(ctx, a).html.replace(/<[^>]+>/g, ''); if (!norm(tx + ' ' + busName(ctx, a.busId)).includes(q)) return false; }
+    return true;
+  });
+  const shown = acts.slice(0, 200);
+  return `
+  <div class="page-head anim"><div><h1>سجل النشاط</h1><p>من فعل ماذا، ومتى. كل عملية مربوطة باسم صاحبها.</p></div></div>
+  <div class="filters">
+    <label class="fsearch">${icon('search')}<span class="sr">بحث</span><input id="l-q" type="search" placeholder="بحث في السجل" value="${esc(f.q)}" data-input="log.q"></label>
+    <select id="l-bus" class="fsel ${f.bus ? 'set' : ''}" data-filter="log.bus" aria-label="الباص">${busOptions(ctx, f.bus, 'كل الباصات')}</select>
+    <select id="l-kind" class="fsel ${f.kind ? 'set' : ''}" data-filter="log.kind" aria-label="نوع العملية"><option value="">كل العمليات</option>${Object.keys(KIND_GROUPS).map(k => `<option value="${k}" ${f.kind === k ? 'selected' : ''}>${KIND_GROUPS[k]}</option>`).join('')}</select>
+    <select id="l-by" class="fsel ${f.by ? 'set' : ''}" data-filter="log.by" aria-label="المستخدم">${memberOptions(ctx, f.by, 'كل الفريق')}</select>
+    <input id="l-from" class="fdate" type="date" value="${esc(f.from)}" data-filter="log.from" aria-label="من تاريخ">
+    <input id="l-to" class="fdate" type="date" value="${esc(f.to)}" data-filter="log.to" aria-label="إلى تاريخ">
+    ${(f.bus || f.kind || f.by || f.from || f.to || f.q) ? `<button class="btn ghost sm" type="button" data-act="clear-filters" data-v="log">مسح الفلاتر</button>` : ''}
+  </div>
+  <p class="res-n">${acts.length} عملية${acts.length > shown.length ? ' · يظهر آخر ' + shown.length : ''}</p>
+  ${shown.length ? `<div class="panel box">${logList(ctx, shown, true)}</div>` : `<div class="panel">${empty('ما فيه نشاط بهذا الوصف', 'جرّب تغيّر الفلاتر.')}</div>`}`;
+}
+function viewStats(ctx){
+  const t = ctx.t, mon = t.slice(0, 7);
+  const maint = ctx.records.filter(r => r.type !== 'note');
+  const thisMon = maint.filter(r => r.date.slice(0, 7) === mon);
+  const costMon = thisMon.reduce((s, r) => s + (Number(r.cost) || 0), 0);
+  const costAll = maint.reduce((s, r) => s + (Number(r.cost) || 0), 0);
+  const openN = ctx.issues.filter(i => i.status !== 'fixed').length;
+  const fixedN = ctx.issues.filter(i => i.status === 'fixed').length;
+  const since = addDays(t, -90);
+  const perBus = ctx.buses.map(b => {
+    const rs = maint.filter(r => r.busId === b.id && r.date >= since && r.type !== 'wash');
+    const iss = ctx.issues.filter(i => i.busId === b.id && (i.createdAt || 0) >= parseYmd(since).getTime());
+    return {b, n: rs.length + iss.length, cost: maint.filter(r => r.busId === b.id).reduce((s, r) => s + (Number(r.cost) || 0), 0)};
+  }).sort((a, b) => b.n - a.n);
+  const maxN = Math.max(1, ...perBus.map(x => x.n));
+  const byCost = perBus.slice().sort((a, b) => b.cost - a.cost);
+  const maxC = Math.max(1, ...byCost.map(x => x.cost));
+  const top = perBus[0];
+  const perMember = ctx.members.map(m => ({m, n: maint.filter(r => r.by === m.id).length + ctx.issues.filter(i => i.closedBy === m.id).length})).sort((a, b) => b.n - a.n);
+  const maxM = Math.max(1, ...perMember.map(x => x.n));
+  const monthName = new Intl.DateTimeFormat(LOC, {month:'long'}).format(new Date());
+  return `
+  <div class="page-head anim"><div><h1>الإحصائيات</h1><p>أرقام بسيطة تساعدك تعرف وين يروح الجهد والمصروف.</p></div></div>
+  <div class="kpis anim">
+    <div class="panel kpi"><div class="l">عمليات الصيانة في ${esc(monthName)}</div><div class="v">${thisMon.length}</div></div>
+    <div class="panel kpi"><div class="l">مشاكل مفتوحة</div><div class="v" style="color:${openN ? 'var(--warn)' : 'inherit'}">${openN}</div></div>
+    <div class="panel kpi"><div class="l">مشاكل تم حلها</div><div class="v" style="color:var(--ok)">${fixedN}</div></div>
+    <div class="panel kpi"><div class="l">تكلفة الصيانة في ${esc(monthName)}</div><div class="v">${fmtN(costMon)}<small>ر.س</small></div></div>
+  </div>
+  ${top && top.n ? `<div class="callout sec anim"><span class="emoji" aria-hidden="true">🚍</span><div><div class="small muted">أكثر باص احتاج صيانة (آخر 90 يوم)</div><b>${esc(top.b.name)}</b> <span class="muted small">— ${top.n} عملية ومشكلة</span></div></div>` : ''}
+  <div class="duo">
+    <section class="panel box anim"><h3><span>العمليات والمشاكل لكل باص</span><span class="muted xs">آخر 90 يوم، بدون الغسيل</span></h3>
+      <div class="bars">${perBus.map((x, i) => `<div class="bar-r ${i === 0 && x.n ? 'top' : ''}"><a class="lb" href="#bus-${esc(x.b.id)}">${esc(x.b.name)}</a><div class="bar-t"><b style="width:${Math.round(x.n / maxN * 100)}%"></b></div><span class="v">${x.n}</span></div>`).join('')}</div>
+    </section>
+    <section class="panel box anim"><h3><span>تكلفة الصيانة لكل باص</span><span class="muted xs">الإجمالي ${fmtMoney(costAll)}</span></h3>
+      <div class="bars">${byCost.map(x => `<div class="bar-r"><a class="lb" href="#bus-${esc(x.b.id)}">${esc(x.b.name)}</a><div class="bar-t"><b style="width:${Math.round(x.cost / maxC * 100)}%"></b></div><span class="v">${fmtN(x.cost)}</span></div>`).join('')}</div>
+    </section>
+  </div>
+  <section class="panel box sec anim"><h3><span>مساهمة الفريق</span><span class="muted xs">عمليات منفذة ومشاكل مغلقة</span></h3>
+    <div class="bars">${perMember.map(x => `<div class="bar-r"><span class="lb">${esc(x.m.name)}</span><div class="bar-t"><b style="width:${Math.round(x.n / maxM * 100)}%"></b></div><span class="v">${x.n}</span></div>`).join('')}</div>
+  </section>`;
+}
+function viewSettings(ctx){
+  const m = me(), sup = isSup();
+  const opsOf = id => S.data.records.filter(r => r.by === id && !r.archived).length + S.data.issues.filter(i => i.by === id && !i.archived).length;
+  const archived = [].concat(
+    S.data.buses.filter(b => b.archived).map(b => ({coll:'buses', id:b.id, title:b.name, sub:'باص', at:b.archivedAt})),
+    S.data.records.filter(r => r.archived).map(r => ({coll:'records', id:r.id, title:(TYPES[r.type]||TYPES.other).label + (r.desc ? ' — ' + r.desc : ''), sub:'صيانة · ' + busName(ctx, r.busId) + ' · ' + fmtDate(r.date), at:r.archivedAt})),
+    S.data.issues.filter(i => i.archived).map(i => ({coll:'issues', id:i.id, title:i.title, sub:'مشكلة · ' + busName(ctx, i.busId), at:i.archivedAt})),
+    S.data.tasks.filter(x => x.archived).map(x => ({coll:'tasks', id:x.id, title:x.title, sub:'مهمة', at:x.archivedAt})),
+    S.data.members.filter(x => x.archived).map(x => ({coll:'members', id:x.id, title:x.name, sub:'عضو', at:x.archivedAt}))
+  ).sort((a, b) => (b.at||0) - (a.at||0));
+  const demoN = ['buses','records','issues','tasks','activity'].reduce((s, k) => s + S.data[k].filter(x => x.demo).length, 0);
+  return `
+  <div class="page-head anim"><div><h1>الإعدادات</h1><p>الفريق، الباصات، والأرشيف.</p></div></div>
+  <div class="set-grid">
+    <div style="display:grid;gap:18px;align-content:start">
+      <section class="panel anim">
+        <div class="box-h"><h2>حسابي</h2></div>
+        <div class="set-row">${avatar(ctx, S.me, 'lg')}<div class="tx"><div class="t">${esc(m.name)}</div><div class="s">${ROLES[m.role] || ''} · ${opsOf(m.id)} عملية مسجلة</div></div>
+          <button class="btn sm" type="button" data-act="switch-user">${icon('exit')}تبديل المستخدم</button></div>
+        <div class="set-row"><div class="tx"><div class="t">حفظ البيانات</div><div class="s">البيانات مشتركة بين الفريق ومحفوظة تلقائيًا، وأي تعديل يظهر للكل مباشرة. ولو ضعف النت عند الباص، يحفظ ويرسل أول ما يرجع الاتصال.</div></div></div>
+        <div class="set-row"><div class="tx"><div class="t">الخروج من الفريق</div><div class="s">على هذا الجهاز فقط.</div></div><button class="btn sm ghost" type="button" data-act="leave-team">${icon('exit')}خروج</button></div>
+      </section>
+      <section class="panel anim">
+        <div class="box-h"><h2>دعوة الفريق</h2></div>
+        <div class="set-row" style="display:grid;gap:10px">
+          <div class="s">أرسل هذا الرابط لأي واحد من الفريق، ويدخل على طول بدون حساب. لا ترسله لأحد من برا الفريق.</div>
+          <input class="inp ltr small" id="set-link" readonly value="${esc(inviteLink())}" aria-label="رابط الدعوة" onfocus="this.select()">
+          <div class="btns"><button class="btn primary sm" type="button" data-act="copy" data-v="link">نسخ رابط الدعوة</button><button class="btn sm" type="button" data-act="share">مشاركة</button></div>
+          <div class="s">رمز الفريق: <b class="ltr tnum">${esc(S.team)}</b> <button class="link" type="button" data-act="copy" data-v="code">نسخ</button></div>
+        </div>
+      </section>
+      <section class="panel anim">
+        <div class="box-h"><h2>الفريق</h2>${sup ? `<button class="btn sm" type="button" data-act="add-member">${icon('plus')}عضو</button>` : ''}</div>
+        ${ctx.members.map(x => `<div class="set-row">${avatar(ctx, x.id)}<div class="tx"><div class="t">${esc(x.name)}${x.id === S.me ? ' <span class="muted xs">(أنت)</span>' : ''}</div><div class="s">${ROLES[x.role] || ''} · ${opsOf(x.id)} عملية</div></div>
+          ${sup || x.id === S.me ? `<button class="icon-btn" type="button" data-act="edit-member" data-id="${esc(x.id)}" aria-label="تعديل ${esc(x.name)}">${icon('edit')}</button>` : ''}</div>`).join('')}
+      </section>
+    </div>
+    <div style="display:grid;gap:18px;align-content:start">
+      <section class="panel anim">
+        <div class="box-h"><h2>الباصات</h2><button class="btn sm" type="button" data-act="add-bus">${icon('plus')}باص</button></div>
+        ${ctx.buses.length ? ctx.buses.map(b => `<div class="set-row"><span class="bus-glyph emoji" style="width:36px;height:36px;font-size:19px" aria-hidden="true">🚍</span><div class="tx"><div class="t">${esc(b.name)}</div><div class="s">${[b.code ? 'رقم ' + b.code : '', b.plate, b.model, b.year].filter(Boolean).map(esc).join(' · ') || 'بدون تفاصيل'}</div></div>
+          <button class="icon-btn" type="button" data-act="edit-bus" data-id="${esc(b.id)}" aria-label="تعديل ${esc(b.name)}">${icon('edit')}</button></div>`).join('') : `<div class="set-row"><span class="muted small">ما فيه باصات.</span></div>`}
+      </section>
+      <section class="panel anim">
+        <div class="box-h"><h2>الأرشيف</h2><span class="muted xs">${archived.length}</span></div>
+        ${archived.length ? archived.slice(0, 40).map(a => `<div class="set-row"><span class="tile">${icon('archive')}</span><div class="tx"><div class="t">${esc(a.title)}</div><div class="s">${esc(a.sub)}${a.at ? ' · أُرشف ' + esc(timeAgo(a.at)) : ''}</div></div>
+          ${sup ? `<button class="btn sm" type="button" data-act="restore" data-coll="${a.coll}" data-id="${esc(a.id)}">${icon('restore')}استعادة</button>` : ''}</div>`).join('')
+          : `<div class="set-row"><span class="muted small">الأرشيف فاضي. السجلات المؤرشفة تظهر هنا${sup ? ' وتقدر تستعيدها' : ' ويستعيدها المشرف'}.</span></div>`}
+      </section>
+      ${demoN && sup ? `<section class="panel anim"><div class="box-h"><h2>البيانات التجريبية</h2></div>
+        <div class="set-row"><div class="tx"><div class="t">${demoN} سجل تجريبي</div><div class="s">الباصات والعمليات اللي جت مع النظام للتجربة. احذفها لما تبدأ تسجل باصاتكم الحقيقية. أسماء الفريق تبقى.</div></div>
+        <button class="btn sm danger" type="button" data-act="clear-demo">حذف التجريبي</button></div></section>` : ''}
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   Files hydration
+   ========================================================= */
+function hydrateFiles(){
+  $$('[data-files]').forEach(async el => {
+    if (el.dataset.done) return;
+    el.dataset.done = '1';
+    const [field, value] = el.dataset.files.split(':');
+    const list = await fetchFiles(field, value);
+    if (!document.body.contains(el)) return;
+    const ctx = getD();
+    if (!list.length){
+      el.innerHTML = field === 'busId' ? empty('ما فيه مرفقات لهذا الباص', 'أضف صور الفواتير أو القطع أو الأعطال من نافذة الصيانة أو المشكلة.') : '<p class="muted small">ما فيه مرفقات.</p>';
+      return;
+    }
+    el.innerHTML = `<div class="gallery">${list.map(f => {
+      let cap = '';
+      if (field === 'busId'){
+        if (f.parentType === 'issue'){ const i = S.data.issues.find(x => x.id === f.parentId); cap = i ? 'مشكلة: ' + i.title : 'مشكلة'; }
+        else { const r = S.data.records.find(x => x.id === f.parentId); cap = r ? (TYPES[r.type]||TYPES.other).label + ' · ' + fmtDate(r.date) : 'صيانة'; }
+      } else cap = timeAgo(f.at) + ' · ' + memberName(ctx, f.by);
+      return `<figure><button type="button" data-act="img" data-id="${esc(f.id)}" data-key="${esc(field + ':' + value)}" aria-label="عرض الصورة"><img src="${f.data}" alt="${esc(cap)}" loading="lazy"></button><figcaption>${esc(cap)}</figcaption></figure>`;
+    }).join('')}</div>`;
+  });
+}
+
+/* =========================================================
+   Login
+   ========================================================= */
+function showLogin(ctx){
+  $('#boot').hidden = true; $('#shell').hidden = true;
+  const el = $('#login'); el.hidden = false; el.className = 'login';
+  const ms = ctx.members;
+  el.innerHTML = `<div class="login-inner">
+    <div class="login-brand"><span class="emoji" aria-hidden="true">🚍</span><h1>مِرْكاب</h1><p class="tag">خلّ الباصات علينا.</p><div class="road" aria-hidden="true"></div></div>
+    ${ms.length ? `<h2>مين معنا اليوم؟</h2><div class="who">${ms.map(m => `<button type="button" data-act="choose-me" data-id="${esc(m.id)}">${avatar(ctx, m.id, 'lg')}<span><span class="nm">${esc(m.name)}</span><br><span class="rl">${ROLES[m.role] || ''}</span></span><span class="go">${icon('fwd')}</span></button>`).join('')}</div>
+      <p class="small muted" style="margin-top:14px">اسمك ما هو بالقائمة؟ <button type="button" class="link" data-act="first-member">أضف نفسك</button></p>`
+    : `<h2>أول مرة؟ ابدأ باسمك</h2>${firstMemberForm(true)}`}
+  </div>
+  <p class="login-foot">مِرْكاب — كل باص، وكل تفاصيله، في مكان واحد.</p>`;
+}
+function firstMemberForm(first){
+  return `<form class="panel box" data-form="first-member" style="display:grid;gap:12px" novalidate>
+    <div class="fld"><label for="fm-name">الاسم</label><input class="inp" id="fm-name" name="name" required maxlength="40" autocomplete="name" placeholder="مثال: أحمد"></div>
+    <div class="fld"><label for="fm-role">الدور</label><select class="inp" id="fm-role" name="role">${Object.keys(ROLES).map(k => `<option value="${k}" ${k === (first ? 'supervisor' : 'member') ? 'selected' : ''}>${ROLES[k]}</option>`).join('')}</select></div>
+    <button class="btn primary" type="submit">ابدأ</button>
+  </form>`;
+}
+async function chooseMe(id){
+  S.me = id; lsSet(LS_ME, id);
+  if (S.mode === 'db' && S.uid){ try { await db.doc('data/users/' + S.uid + '/profile').set({memberId: id}); } catch(e){} }
+  closeAllModals(); lastRouteKey = ''; render();
+}
+
+/* =========================================================
+   Modals
+   ========================================================= */
+const modalStack = [];
+function openModal(inner, size='', onMount){
+  const wrap = document.createElement('div');
+  wrap.className = 'modal';
+  wrap.innerHTML = `<div class="scrim" data-act="close"></div><div class="dialog ${size}" role="dialog" aria-modal="true"><div class="grab" aria-hidden="true"></div>${inner}</div>`;
+  $('#modals').appendChild(wrap);
+  modalStack.push({wrap, prev: document.activeElement});
+  document.body.style.overflow = 'hidden';
+  const h = wrap.querySelector('h2'); if (h){ h.id = h.id || genId('dh'); wrap.querySelector('.dialog').setAttribute('aria-labelledby', h.id); }
+  if (onMount) onMount(wrap);
+  const first = wrap.querySelector('[autofocus]') || wrap.querySelector('.dlg-b input:not([type=hidden]):not([type=radio]):not([type=file]), .dlg-b textarea') || wrap.querySelector('button');
+  if (first && window.innerWidth >= 700) setTimeout(() => first.focus(), 30); else if (first && first.hasAttribute('autofocus')) setTimeout(() => first.focus(), 30);
+  return wrap;
+}
+function closeModal(){
+  const top = modalStack.pop(); if (!top) return;
+  top.wrap.remove();
+  if (!modalStack.length) document.body.style.overflow = '';
+  if (top.prev && document.body.contains(top.prev)) try { top.prev.focus({preventScroll:true}); } catch(e){}
+}
+function closeAllModals(){ while (modalStack.length) closeModal(); }
+const dlgHead = (title, sub) => `<div class="dlg-h"><div class="tx"><h2>${title}</h2>${sub ? `<p>${sub}</p>` : ''}</div><button class="icon-btn" type="button" data-act="close" aria-label="إغلاق">${icon('x')}</button></div>`;
+function confirmBox(title, body, okLabel, danger){
+  return new Promise(res => {
+    const w = openModal(`${dlgHead(esc(title))}<div class="dlg-b"><p>${esc(body)}</p></div>
+      <div class="dlg-f"><button class="btn ${danger ? 'primary' : 'primary'}" type="button" data-c="1">${esc(okLabel)}</button><button class="btn ghost" type="button" data-c="0">إلغاء</button></div>`, 'sm');
+    w.addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b){ e.stopPropagation(); closeModal(); res(b.dataset.c === '1'); } });
+    w.querySelector('.scrim').addEventListener('click', () => res(false));
+    w.querySelector('[data-act=close]').addEventListener('click', () => res(false));
+  });
+}
+function toast(msg, err){
+  const t = document.createElement('div');
+  t.className = 'toast' + (err ? ' err' : '');
+  t.innerHTML = (err ? '' : '<i class="lamp"></i>') + `<span>${esc(msg)}</span>`;
+  const host = $('#toasts'); host.innerHTML = ''; host.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, err ? 5200 : 2600);
+}
+async function guarded(fn){
+  if (S.readOnly){ toast('عندك صلاحية عرض فقط، ما تقدر تحفظ تعديلات.', true); return false; }
+  try { await fn(); return true; } catch(e){ console.warn('[mirkab] write', e); toast(writeError(e), true); return false; }
+}
+
+/* attachment picker (shared by forms) */
+function filePicker(prefix){
+  return `<div class="fld"><span class="lbl">المرفقات <span class="opt">اختياري · صور فواتير أو قطع أو أعطال</span></span>
+    <div class="files-in" id="${prefix}-files"><label class="add-file" for="${prefix}-file">${icon('image')}<span>إضافة صورة</span></label></div>
+    <input type="file" id="${prefix}-file" accept="image/*" multiple class="sr"></div>`;
+}
+function bindFilePicker(wrap, prefix, pending){
+  const inp = wrap.querySelector('#' + prefix + '-file');
+  const host = wrap.querySelector('#' + prefix + '-files');
+  const draw = () => {
+    host.querySelectorAll('.thumb').forEach(n => n.remove());
+    pending.forEach((p, i) => {
+      const d = document.createElement('div'); d.className = 'thumb';
+      d.innerHTML = `<img src="${p.data}" alt=""><button type="button" aria-label="إزالة الصورة">${icon('x')}</button>`;
+      d.querySelector('button').addEventListener('click', () => { pending.splice(i, 1); draw(); });
+      host.insertBefore(d, host.lastElementChild);
+    });
+  };
+  inp.addEventListener('change', async () => {
+    const files = Array.from(inp.files || []).filter(f => /^image\//.test(f.type)).slice(0, 6 - pending.length);
+    for (const f of files){ try { pending.push(await compressImage(f)); } catch(e){ toast('ما قدرنا نقرأ الصورة ' + f.name, true); } }
+    inp.value = ''; draw();
+  });
+}
+
+/* ---- maintenance form ---- */
+function openMaint(opts){
+  const ctx = getD();
+  if (!ctx.buses.length){ toast('أضف باص أول.', true); return; }
+  const rec = opts.id ? S.data.records.find(r => r.id === opts.id) : null;
+  const isNote = rec ? rec.type === 'note' : opts.type === 'note';
+  if (isNote) return openNote(opts, rec);
+  const r = rec || {busId: opts.bus || '', type: opts.type || 'oil', date: ctx.t, by: S.me};
+  if (!rec && (!r.busId || !ctx.busById[r.busId])) r.busId = (route().name === 'bus' && route().id) || ctx.buses[0].id;
+  const pending = [];
+  const sup = isSup();
+  const w = openModal(`${dlgHead(rec ? 'سجل صيانة' : 'إضافة صيانة', rec ? 'أضافه ' + esc(memberName(ctx, rec.createdBy || rec.by)) + ' ' + esc(timeAgo(rec.createdAt)) + (rec.updatedAt && rec.updatedAt !== rec.createdAt ? ' · عُدّل ' + esc(timeAgo(rec.updatedAt)) : '') : '')}
+    <form data-form="maint" novalidate style="display:contents">
+      <input type="hidden" name="id" value="${esc(rec ? rec.id : '')}">
+      <div class="dlg-b">
+        <div class="fld"><label for="mf-bus">الباص</label><select class="inp" id="mf-bus" name="busId" required>${busOptions(ctx, r.busId)}</select></div>
+        <fieldset class="fld" style="border:0;padding:0;margin:0"><legend class="lbl" style="font-size:var(--fs-sm);font-weight:500;color:var(--ink-2);margin-bottom:6px">نوع العملية</legend>
+          <div class="chips">${TYPE_ORDER.map(k => `<label class="chip"><input type="radio" name="type" value="${k}" ${r.type === k ? 'checked' : ''}><span>${icon(TYPES[k].icon)}${TYPES[k].label}</span></label>`).join('')}</div></fieldset>
+        <div class="fld"><label for="mf-desc">الوصف <span class="opt">اختياري</span></label><textarea class="inp" id="mf-desc" name="desc" maxlength="500" rows="2" placeholder="مثال: زيت 15W-40 مع فلتر زيت">${esc(r.desc || '')}</textarea></div>
+        <div class="g2">
+          <div class="fld"><label for="mf-date">التاريخ</label><input class="inp" type="date" id="mf-date" name="date" required value="${esc(r.date)}" max="${ctx.t}"></div>
+          <div class="fld"><label for="mf-km">عداد الكيلومترات <span class="opt" id="mf-km-opt">اختياري</span></label><input class="inp ltr" type="number" inputmode="numeric" id="mf-km" name="km" min="0" max="3000000" step="1" value="${esc(r.km || '')}"></div>
+        </div>
+        <p class="km-hint" id="mf-km-hint" aria-live="polite"></p>
+        <div class="g2">
+          <div class="fld"><label for="mf-cost">التكلفة (ر.س) <span class="opt">اختياري</span></label><input class="inp ltr" type="number" inputmode="decimal" id="mf-cost" name="cost" min="0" max="1000000" step="0.01" value="${esc(r.cost || '')}"></div>
+          <div class="fld"><label for="mf-by">من نفّذ العملية</label><select class="inp" id="mf-by" name="by" ${sup ? '' : 'disabled'}>${memberOptions(ctx, r.by)}</select></div>
+        </div>
+        <div class="fld"><label for="mf-notes">ملاحظات <span class="opt">اختياري</span></label><textarea class="inp" id="mf-notes" name="notes" maxlength="1000" rows="2">${esc(r.notes || '')}</textarea></div>
+        ${rec ? `<div class="fld"><span class="lbl">المرفقات الحالية</span><div data-files="parentId:${esc(rec.id)}"><div class="mini-loader"><span class="emoji" aria-hidden="true">🚍</span>...</div></div></div>` : ''}
+        ${filePicker('mf')}
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">حفظ العملية</button>${rec ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="records" data-id="${esc(rec.id)}">${icon('archive')}أرشفة</button>` : ''}</div>
+    </form>`, '', wrap => { bindFilePicker(wrap, 'mf', pending); bindKmHint(wrap, rec); });
+  w._pending = pending;
+  hydrateFiles();
+}
+function oilSched(b){ return ((b && b.schedules && b.schedules.length) ? b.schedules : SCHED_DEFAULT).find(s => s.key === 'oil' && s.enabled !== false) || null; }
+function busKmExcept(busId, exceptId){
+  const b = S.data.buses.find(x => x.id === busId) || {};
+  const recs = S.data.records.filter(r => r.busId === busId && !r.archived && r.id !== exceptId).map(r => Number(r.km) || 0);
+  return Math.max(Number(b.kmManual) || 0, 0, ...recs);
+}
+function bindKmHint(wrap, rec){
+  const kmIn = wrap.querySelector('#mf-km'), busIn = wrap.querySelector('#mf-bus'), opt = wrap.querySelector('#mf-km-opt'), hint = wrap.querySelector('#mf-km-hint');
+  const sync = () => {
+    const type = (wrap.querySelector('input[name=type]:checked') || {}).value;
+    const b = getD().busById[busIn.value];
+    const cur = rec ? busKmExcept(busIn.value, rec.id) : ((getD().info[busIn.value] || {}).km || 0);
+    const val = Number(kmIn.value) || 0;
+    const isOil = type === 'oil';
+    kmIn.required = isOil;
+    opt.textContent = isOil ? 'مطلوب لتغيير الزيت' : 'اختياري';
+    kmIn.placeholder = cur ? 'آخر قراءة ' + fmtN(cur) : 'مثال: 184300';
+    const sc = oilSched(b);
+    let h = '';
+    if (isOil){
+      if (val && val >= cur){
+        h = `${icon('gauge')}<span>بعد الحفظ يصير ممشى الباص <b class="tnum">${fmtN(val)} كم</b>`;
+        if (sc && Number(sc.km)) h += `، والزيت الجاي عند <b class="tnum">${fmtN(val + Number(sc.km))} كم</b>`;
+        h += '.</span>';
+      } else h = `${icon('gauge')}<span>اكتب قراءة العداد وقت التغيير، وممشى الباص يتحدث تلقائي ويتحسب موعد الزيت الجاي.${cur ? ' آخر قراءة مسجلة: <b class="tnum">' + fmtN(cur) + ' كم</b>.' : ''}</span>`;
+    } else if (val && val > cur) h = `${icon('gauge')}<span>ممشى الباص بيتحدث إلى <b class="tnum">${fmtN(val)} كم</b>.</span>`;
+    hint.innerHTML = h; hint.hidden = !h;
+  };
+  wrap.addEventListener('change', e => { if (e.target.name === 'type' || e.target === busIn) sync(); });
+  kmIn.addEventListener('input', sync);
+  sync();
+}
+function openOdo(busId){
+  const ctx = getD(); const b = ctx.busById[busId]; if (!b) return;
+  const cur = ctx.info[busId].km;
+  openModal(`${dlgHead('تحديث ممشى الباص', esc(b.name))}
+    <form data-form="odo" novalidate style="display:contents"><input type="hidden" name="busId" value="${esc(busId)}">
+      <div class="dlg-b">
+        <div class="fld"><label for="of-km">قراءة العداد الحالية (كم)</label><input class="inp ltr" type="number" inputmode="numeric" id="of-km" name="km" min="0" max="3000000" required autofocus placeholder="${fmtN(cur)}"></div>
+        <p class="small muted">آخر قراءة مسجلة: <b class="tnum">${fmtN(cur)} كم</b>${b.kmAt ? ' · ' + esc(timeAgo(b.kmAt)) : ''}. تحديث الممشى بين تغييرات الزيت يخلي موعد الزيت الجاي دقيق.</p>
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">حفظ القراءة</button></div>
+    </form>`, 'sm');
+}
+async function syncBusKm(busId, exceptId, km){
+  const b = S.data.buses.find(x => x.id === busId); if (!b) return null;
+  const newKm = Math.max(busKmExcept(busId, exceptId), Number(km) || 0);
+  if (newKm !== (Number(b.km) || 0)) await patchDoc('buses', busId, {km: newKm, kmAt: Date.now()});
+  return newKm;
+}
+function openNote(opts, rec){
+  const ctx = getD();
+  const busId = rec ? rec.busId : (opts.bus || (route().name === 'bus' && route().id) || ctx.buses[0].id);
+  openModal(`${dlgHead(rec ? 'ملاحظة' : 'إضافة ملاحظة', rec ? 'كتبها ' + esc(memberName(ctx, rec.by)) + ' ' + esc(timeAgo(rec.createdAt)) : 'ملاحظة سريعة تنحفظ في سجل الباص.')}
+    <form data-form="note" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(rec ? rec.id : '')}">
+      <div class="dlg-b">
+        <div class="fld"><label for="nf-bus">الباص</label><select class="inp" id="nf-bus" name="busId">${busOptions(ctx, busId)}</select></div>
+        <div class="fld"><label for="nf-text">الملاحظة</label><textarea class="inp" id="nf-text" name="desc" required maxlength="600" rows="3" autofocus placeholder="مثال: السائق يقول فيه صوت من الباب الأمامي">${esc(rec ? rec.desc : '')}</textarea></div>
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">حفظ الملاحظة</button>${rec ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="records" data-id="${esc(rec.id)}">${icon('archive')}أرشفة</button>` : ''}</div>
+    </form>`, 'sm');
+}
+
+/* ---- issue forms ---- */
+function openIssueForm(opts){
+  const ctx = getD();
+  if (!ctx.buses.length){ toast('أضف باص أول.', true); return; }
+  const iss = opts.id ? S.data.issues.find(i => i.id === opts.id) : null;
+  const i = iss || {busId: opts.bus || (route().name === 'bus' && route().id) || ctx.buses[0].id, severity:'normal'};
+  const pending = [];
+  const w = openModal(`${dlgHead(iss ? 'تعديل المشكلة' : 'إضافة مشكلة')}
+    <form data-form="issue" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(iss ? iss.id : '')}">
+      <div class="dlg-b">
+        <div class="fld"><label for="if-bus">الباص</label><select class="inp" id="if-bus" name="busId">${busOptions(ctx, i.busId)}</select></div>
+        <div class="fld"><label for="if-title">وش المشكلة؟</label><input class="inp" id="if-title" name="title" required minlength="3" maxlength="90" value="${esc(i.title || '')}" placeholder="مثال: المكيف ضعيف" autofocus></div>
+        <fieldset class="fld" style="border:0;padding:0;margin:0"><legend class="lbl" style="font-size:var(--fs-sm);font-weight:500;color:var(--ink-2);margin-bottom:6px">درجة الأهمية</legend>
+          <div class="chips">${Object.keys(SEV).map(k => `<label class="chip c-${k}"><input type="radio" name="severity" value="${k}" ${i.severity === k ? 'checked' : ''}><span>${SEV[k]}</span></label>`).join('')}</div></fieldset>
+        <div class="fld"><label for="if-desc">التفاصيل <span class="opt">اختياري</span></label><textarea class="inp" id="if-desc" name="desc" maxlength="1000" rows="3" placeholder="متى تظهر؟ وين بالضبط؟">${esc(i.desc || '')}</textarea></div>
+        ${filePicker('if')}
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">${iss ? 'حفظ التعديل' : 'حفظ المشكلة'}</button></div>
+    </form>`, '', wrap => bindFilePicker(wrap, 'if', pending));
+  w._pending = pending;
+}
+function openIssue(id){
+  const ctx = getD();
+  const i = S.data.issues.find(x => x.id === id);
+  if (!i){ toast('ما لقينا المشكلة.', true); return; }
+  const st = ISSUE_ST[i.status];
+  const hist = (i.updates || []).slice().sort((a,b) => (b.at||0) - (a.at||0));
+  const w = openModal(`${dlgHead('⚠️ ' + esc(i.title), esc(busName(ctx, i.busId)))}
+    <div class="dlg-b">
+      <div class="btns">${issuePill(i.status)}${sevTag(i.severity)}${i.archived ? '<span class="sev">مؤرشفة</span>' : ''}</div>
+      ${i.desc ? `<p class="desc">${esc(i.desc)}</p>` : ''}
+      <dl class="meta-g">
+        <div><dt>أضيفت</dt><dd>${esc(fmtDateLong(ymd(new Date(i.createdAt))))}</dd></div>
+        <div><dt>أضافها</dt><dd>${esc(memberName(ctx, i.by))}</dd></div>
+        <div><dt>آخر تحديث</dt><dd>${esc(timeAgo(i.updatedAt || i.createdAt))}</dd></div>
+        <div><dt>الأهمية</dt><dd>${SEV[i.severity]}</dd></div>
+        ${i.status === 'fixed' ? `<div><dt>تاريخ الإصلاح</dt><dd>${esc(fmtDateLong(i.fixDate || ymd(new Date(i.closedAt))))}</dd></div><div><dt>أصلحها</dt><dd>${esc(memberName(ctx, i.closedBy))}</dd></div>
+          <div class="full"><dt>ماذا تم عمله</dt><dd class="desc">${esc(i.fixNotes || '—')}</dd></div>${i.cost ? `<div><dt>التكلفة</dt><dd class="tnum">${fmtMoney(i.cost)}</dd></div>` : ''}` : ''}
+      </dl>
+      ${hist.length ? `<div><div class="lbl small" style="font-weight:500;color:var(--ink-2);margin-bottom:8px">التحديثات</div><ul class="hist">${hist.map(h => `<li><i class="lamp h-${ISSUE_ST[h.status] ? ISSUE_ST[h.status].l : 'warn'}"></i><div class="tx"><div><b style="font-weight:500">${esc(memberName(ctx, h.by))}</b> <span class="muted xs">${esc(timeAgo(h.at))}${ISSUE_ST[h.status] ? ' · ' + ISSUE_ST[h.status].t : ''}</span></div>${h.note ? `<div class="n">${esc(h.note)}</div>` : ''}</div></li>`).join('')}</ul></div>` : ''}
+      <div><div class="lbl small" style="font-weight:500;color:var(--ink-2);margin-bottom:8px">المرفقات</div><div data-files="parentId:${esc(i.id)}"><div class="mini-loader"><span class="emoji" aria-hidden="true">🚍</span>...</div></div></div>
+    </div>
+    <div class="dlg-f">
+      ${i.status !== 'fixed' ? `<button class="btn primary" type="button" data-act="update-issue" data-id="${esc(i.id)}">تحديث المشكلة</button><button class="btn accent" type="button" data-act="fix-issue" data-id="${esc(i.id)}">${icon('check')}تم الإصلاح</button>`
+        : `<button class="btn" type="button" data-act="reopen-issue" data-id="${esc(i.id)}">إعادة فتح</button>`}
+      <span class="sp"></span>
+      <button class="btn ghost" type="button" data-act="edit-issue" data-id="${esc(i.id)}" aria-label="تعديل">${icon('edit')}</button>
+      <button class="btn ghost danger" type="button" data-act="archive" data-coll="issues" data-id="${esc(i.id)}" aria-label="أرشفة">${icon('archive')}</button>
+    </div>`, 'lg');
+  hydrateFiles();
+  return w;
+}
+function openIssueUpdate(id){
+  const i = S.data.issues.find(x => x.id === id); if (!i) return;
+  openModal(`${dlgHead('تحديث المشكلة', esc(i.title))}
+    <form data-form="issue-update" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(i.id)}">
+      <div class="dlg-b">
+        <fieldset class="fld" style="border:0;padding:0;margin:0"><legend class="lbl" style="font-size:var(--fs-sm);font-weight:500;color:var(--ink-2);margin-bottom:6px">الحالة</legend>
+          <div class="chips">${['open','followup'].map(k => `<label class="chip"><input type="radio" name="status" value="${k}" ${i.status === k ? 'checked' : ''}><span><i class="lamp" style="color:var(--${ISSUE_ST[k].l})"></i>${ISSUE_ST[k].t}</span></label>`).join('')}</div></fieldset>
+        <fieldset class="fld" style="border:0;padding:0;margin:0"><legend class="lbl" style="font-size:var(--fs-sm);font-weight:500;color:var(--ink-2);margin-bottom:6px">الأهمية</legend>
+          <div class="chips">${Object.keys(SEV).map(k => `<label class="chip c-${k}"><input type="radio" name="severity" value="${k}" ${i.severity === k ? 'checked' : ''}><span>${SEV[k]}</span></label>`).join('')}</div></fieldset>
+        <div class="fld"><label for="uf-note">وش الجديد؟</label><textarea class="inp" id="uf-note" name="note" maxlength="600" rows="3" autofocus placeholder="مثال: حجزنا موعد عند الورشة يوم الثلاثاء"></textarea></div>
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">حفظ التحديث</button></div>
+    </form>`, 'sm');
+}
+function openIssueFix(id){
+  const ctx = getD();
+  const i = S.data.issues.find(x => x.id === id); if (!i) return;
+  openModal(`${dlgHead('تم الإصلاح', esc(i.title) + ' — ' + esc(busName(ctx, i.busId)))}
+    <form data-form="issue-fix" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(i.id)}">
+      <div class="dlg-b">
+        <div class="fld"><label for="xf-notes">ماذا تم عمله؟</label><textarea class="inp" id="xf-notes" name="fixNotes" required minlength="3" maxlength="800" rows="3" autofocus placeholder="مثال: تعبئة فريون وتنظيف الفلتر"></textarea></div>
+        <div class="g2">
+          <div class="fld"><label for="xf-date">تاريخ الإصلاح</label><input class="inp" type="date" id="xf-date" name="date" value="${ctx.t}" max="${ctx.t}" required></div>
+          <div class="fld"><label for="xf-cost">التكلفة (ر.س) <span class="opt">اختياري</span></label><input class="inp ltr" type="number" inputmode="decimal" id="xf-cost" name="cost" min="0" step="0.01"></div>
+        </div>
+        <div class="g2">
+          <div class="fld"><label for="xf-by">من أصلحها</label><select class="inp" id="xf-by" name="by" ${isSup() ? '' : 'disabled'}>${memberOptions(ctx, S.me)}</select></div>
+          <div class="fld"><label for="xf-type">نوع العملية في الصيانة</label><select class="inp" id="xf-type" name="type">${TYPE_ORDER.map(k => `<option value="${k}" ${k === 'repair' ? 'selected' : ''}>${TYPES[k].label}</option>`).join('')}</select></div>
+        </div>
+        <label style="display:flex;gap:10px;align-items:center;font-size:var(--fs-sm)"><input type="checkbox" id="xf-rec" name="addRecord" checked style="width:18px;height:18px;accent-color:var(--accent)"> أضفها لسجل الصيانة كعملية منفذة</label>
+      </div>
+      <div class="dlg-f"><button class="btn accent" type="submit">${icon('check')}إغلاق المشكلة</button></div>
+    </form>`, 'sm');
+}
+
+/* ---- tasks ---- */
+function openTask(id){
+  const ctx = getD();
+  const x = id ? S.data.tasks.find(t => t.id === id) : null;
+  const busId = x ? x.busId : ((route().name === 'bus' && route().id) || '');
+  openModal(`${dlgHead(x ? 'تعديل المهمة' : 'مهمة جديدة')}
+    <form data-form="task" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(x ? x.id : '')}">
+      <div class="dlg-b">
+        <div class="fld"><label for="tf-title">المهمة</label><input class="inp" id="tf-title" name="title" required minlength="3" maxlength="120" value="${esc(x ? x.title : '')}" placeholder="مثال: تجديد استمارة الباص 3" autofocus></div>
+        <div class="g2">
+          <div class="fld"><label for="tf-bus">الباص <span class="opt">اختياري</span></label><select class="inp" id="tf-bus" name="busId">${busOptions(ctx, busId, 'مهمة عامة')}</select></div>
+          <div class="fld"><label for="tf-due">الموعد <span class="opt">اختياري</span></label><input class="inp" type="date" id="tf-due" name="due" value="${esc(x && x.due || '')}"></div>
+        </div>
+        <fieldset class="fld" style="border:0;padding:0;margin:0"><legend class="lbl" style="font-size:var(--fs-sm);font-weight:500;color:var(--ink-2);margin-bottom:6px">الأولوية</legend>
+          <div class="chips"><label class="chip"><input type="radio" name="priority" value="normal" ${!x || x.priority !== 'urgent' ? 'checked' : ''}><span>عادية</span></label><label class="chip c-urgent"><input type="radio" name="priority" value="urgent" ${x && x.priority === 'urgent' ? 'checked' : ''}><span>عاجلة</span></label></div></fieldset>
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">${x ? 'حفظ' : 'إضافة المهمة'}</button>${x ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="tasks" data-id="${esc(x.id)}">${icon('archive')}أرشفة</button>` : ''}</div>
+    </form>`, 'sm');
+}
+
+/* ---- bus form ---- */
+function openBus(id){
+  const b = id ? S.data.buses.find(x => x.id === id) : null;
+  const sc = (b && b.schedules && b.schedules.length) ? b.schedules : SCHED_DEFAULT;
+  const ctx = getD();
+  const nextCode = String((Math.max(0, ...ctx.buses.map(x => parseInt(x.code) || 0)) + 1));
+  openModal(`${dlgHead(b ? 'بيانات الباص' : 'إضافة باص')}
+    <form data-form="bus" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(b ? b.id : '')}">
+      <div class="dlg-b">
+        <div class="fld"><label for="bf-name">اسم الباص</label><input class="inp" id="bf-name" name="name" required maxlength="40" value="${esc(b ? b.name : '')}" placeholder="مثال: كوستر الأزرق" autofocus></div>
+        <div class="g2">
+          <div class="fld"><label for="bf-code">الرقم الداخلي</label><input class="inp" id="bf-code" name="code" maxlength="8" value="${esc(b ? (b.code || '') : nextCode)}"></div>
+          <div class="fld"><label for="bf-plate">رقم اللوحة <span class="opt">اختياري</span></label><input class="inp" id="bf-plate" name="plate" maxlength="20" value="${esc(b ? (b.plate || '') : '')}" placeholder="أ ب ج 1234"></div>
+        </div>
+        <div class="g2">
+          <div class="fld"><label for="bf-model">النوع <span class="opt">اختياري</span></label><input class="inp" id="bf-model" name="model" maxlength="40" value="${esc(b ? (b.model || '') : '')}" placeholder="تويوتا كوستر"></div>
+          <div class="fld"><label for="bf-year">سنة الموديل <span class="opt">اختياري</span></label><input class="inp ltr" type="number" id="bf-year" name="year" min="1980" max="2035" value="${esc(b ? (b.year || '') : '')}"></div>
+        </div>
+        <div class="fld"><label for="bf-km">ممشى الباص الحالي (كم) <span class="opt">اختياري · يتحدث تلقائي مع كل تغيير زيت</span></label><input class="inp ltr" type="number" id="bf-km" name="km" min="0" value="${esc(b ? (b.km || '') : '')}"></div>
+        <div class="fld"><label for="bf-desc">وصف <span class="opt">اختياري</span></label><textarea class="inp" id="bf-desc" name="desc" rows="2" maxlength="300" placeholder="مثال: باص حلقة الفجر — حي النرجس">${esc(b ? (b.desc || '') : '')}</textarea></div>
+        <div class="fld"><span class="lbl">الصيانة الدورية</span>
+          <div class="sched-ed"><div class="r hd"><span></span><span>المهمة</span><span>كل (يوم)</span><span>أو (كم)</span></div>
+          ${SCHED_DEFAULT.map(d => { const s = sc.find(x => x.key === d.key) || Object.assign({}, d, {enabled:false}); return `<div class="r"><input type="checkbox" name="sc-${d.key}-on" ${s.enabled !== false ? 'checked' : ''} aria-label="تفعيل ${d.label}"><span>${d.label}</span><input class="inp ltr" type="number" min="1" max="3650" name="sc-${d.key}-days" value="${esc(s.days || d.days)}" aria-label="${d.label}: كل كم يوم"><input class="inp ltr" type="number" min="0" max="100000" step="100" name="sc-${d.key}-km" value="${esc(s.km || '')}" placeholder="—" aria-label="${d.label}: كل كم كيلو"></div>`; }).join('')}
+          </div></div>
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">${b ? 'حفظ' : 'إضافة الباص'}</button>${b && isSup() ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="buses" data-id="${esc(b.id)}">${icon('archive')}أرشفة الباص</button>` : ''}</div>
+    </form>`);
+}
+function openMember(id){
+  const m = id ? S.data.members.find(x => x.id === id) : null;
+  const sup = isSup();
+  openModal(`${dlgHead(m ? 'بيانات العضو' : 'عضو جديد')}
+    <form data-form="member" novalidate style="display:contents"><input type="hidden" name="id" value="${esc(m ? m.id : '')}">
+      <div class="dlg-b">
+        <div class="fld"><label for="pf-name">الاسم</label><input class="inp" id="pf-name" name="name" required maxlength="40" value="${esc(m ? m.name : '')}" autofocus></div>
+        <div class="fld"><label for="pf-role">الدور</label><select class="inp" id="pf-role" name="role" ${sup ? '' : 'disabled'}>${Object.keys(ROLES).map(k => `<option value="${k}" ${(m ? m.role : 'member') === k ? 'selected' : ''}>${ROLES[k]}</option>`).join('')}</select></div>
+      </div>
+      <div class="dlg-f"><button class="btn primary" type="submit">حفظ</button>${m && sup && m.id !== S.me ? `<span class="sp"></span><button class="btn ghost danger" type="button" data-act="archive" data-coll="members" data-id="${esc(m.id)}">${icon('archive')}أرشفة</button>` : ''}</div>
+    </form>`, 'sm');
+}
+
+/* ---- quick add, more, search, alerts ---- */
+function openQuick(){
+  const busId = route().name === 'bus' ? route().id : '';
+  const b = busId ? getD().busById[busId] : null;
+  const items = [
+    ['add-maint', '', 'repair', 'إضافة صيانة', 'زيت، فلتر، إصلاح، أي عملية'],
+    ['add-issue', '', 'issue', 'إضافة مشكلة', 'عطل أو ملاحظة تحتاج متابعة'],
+    ['add-maint', 'wash', 'wash', 'إضافة غسيل', 'تسجيل سريع للغسيل'],
+    ['add-maint', 'inspect', 'inspect', 'إضافة فحص', 'فحص عام أو دوري'],
+    ['add-maint', 'note', 'note', 'إضافة ملاحظة', 'تنحفظ في سجل الباص']
+  ];
+  openModal(`${dlgHead('إضافة', b ? 'على ' + esc(b.name) : 'اختر وش تبي تسجل')}<div class="dlg-b"><div class="sheet-list">
+    ${items.map(x => `<button type="button" data-act="${x[0]}" data-type="${x[1]}" data-bus="${esc(busId)}" data-replace="1"><span class="tile">${icon(x[2])}</span><span>${x[3]}<small>${x[4]}</small></span></button>`).join('')}
+  </div></div>`, 'sm');
+}
+function openMore(){
+  openModal(`${dlgHead('المزيد')}<div class="dlg-b"><div class="sheet-list">
+    ${[['maint','repair','الصيانة','كل عمليات الصيانة'],['issues','issue','المشاكل','المفتوحة والمغلقة'],['log','log','سجل النشاط','من فعل ماذا'],['stats','stats','الإحصائيات','أرقام بسيطة'],['settings','settings','الإعدادات','الفريق والباصات والأرشيف']]
+      .map(x => `<a href="#${x[0]}" data-act="close-go"><span class="tile">${icon(x[1])}</span><span>${x[2]}<small>${x[3]}</small></span></a>`).join('')}
+  </div></div>`, 'sm');
+}
+function openSearch(){
+  const w = openModal(`<div class="search-in">${icon('search')}<label class="sr" for="gs-q">بحث</label><input id="gs-q" type="search" placeholder="باص، مشكلة، نوع صيانة، شخص، لوحة..." autofocus autocomplete="off"><button class="icon-btn" type="button" data-act="close" aria-label="إغلاق">${icon('x')}</button></div>
+    <div class="dlg-b" id="gs-res" style="gap:6px"><p class="muted small" style="padding:6px 4px">اكتب أي شي: «زيت»، «المكيف»، «كوستر»، اسم أحد من الفريق، أو رقم لوحة.</p></div>`, 'lg');
+  const inp = w.querySelector('#gs-q'), res = w.querySelector('#gs-res');
+  setTimeout(() => inp.focus(), 40);
+  inp.addEventListener('input', () => {
+    const q = norm(inp.value.trim()); const ctx = getD();
+    if (!q){ res.innerHTML = '<p class="muted small" style="padding:6px 4px">اكتب أي شي للبحث.</p>'; return; }
+    const buses = ctx.buses.filter(b => norm([b.name, b.plate, b.code, b.model].join(' ')).includes(q)).slice(0, 6);
+    const issues = ctx.issues.filter(i => norm([i.title, i.desc, busName(ctx, i.busId)].join(' ')).includes(q)).slice(0, 6);
+    const recs = ctx.records.filter(r => norm([TYPES[r.type].label, r.desc, r.notes, busName(ctx, r.busId)].join(' ')).includes(q)).slice(0, 8);
+    const mems = ctx.members.filter(m => norm(m.name + ' ' + (ROLES[m.role]||'')).includes(q));
+    const g = (title, html) => html ? `<div class="sr-g"><h4>${title}</h4><div class="sheet-list">${html}</div></div>` : '';
+    let h = g('الباصات', buses.map(b => `<a href="#bus-${esc(b.id)}" data-act="close-go"><span class="tile emoji" style="font-size:18px">🚍</span><span>${esc(b.name)}<small>${esc([b.plate, LEVEL[ctx.info[b.id].level]].filter(Boolean).join(' · '))}</small></span></a>`).join(''))
+      + g('المشاكل', issues.map(i => `<button type="button" data-act="open-issue" data-id="${esc(i.id)}"><span class="tile t-${ISSUE_ST[i.status].l}">${icon('issue')}</span><span>${esc(i.title)}<small>${esc(busName(ctx, i.busId))} · ${ISSUE_ST[i.status].t}</small></span></button>`).join(''))
+      + g('الصيانة', recs.map(r => `<button type="button" data-act="edit-maint" data-id="${esc(r.id)}"><span class="tile">${icon(TYPES[r.type].icon)}</span><span>${esc(TYPES[r.type].label)}${r.desc ? ' — ' + esc(r.desc) : ''}<small>${esc(busName(ctx, r.busId))} · ${esc(fmtDate(r.date))} · ${esc(memberName(ctx, r.by))}</small></span></button>`).join(''))
+      + g('الفريق', mems.map(m => `<button type="button" data-act="filter-member" data-id="${esc(m.id)}">${avatar(ctx, m.id)}<span>${esc(m.name)}<small>عرض عملياته في السجل</small></span></button>`).join(''));
+    res.innerHTML = h || empty('ما لقينا شي', 'جرّب كلمة ثانية.');
+  });
+}
+function openAlerts(){
+  const ctx = getD();
+  const seen = new Set(lsGet(LS_SEEN, []));
+  const list = ctx.alerts;
+  openModal(`${dlgHead('التنبيهات')}<div class="dlg-b" style="gap:0">
+    ${list.length ? list.map(a => `<button type="button" class="alert-i a-${a.level} ${seen.has(a.key) ? '' : 'new'}" ${dataAttrs(a.act)}><i class="lamp"></i><span class="tx"><span class="t">${esc(a.text)}</span>${a.sub ? `<span class="s"><br>${esc(a.sub)}</span>` : ''}</span></button>`).join('')
+      : empty('ما فيه تنبيهات', 'كل شي ماشي تمام.')}
+  </div>`, 'sm');
+  lsSet(LS_SEEN, list.map(a => a.key));
+  renderChrome(ctx, route());
+}
+
+/* =========================================================
+   Form submit handlers
+   ========================================================= */
+function formVals(form){
+  const o = {};
+  new FormData(form).forEach((v, k) => { o[k] = typeof v === 'string' ? v.trim() : v; });
+  return o;
+}
+function fail(form, name, msg){
+  const el = form.querySelector('[name="' + name + '"]');
+  form.querySelectorAll('.err').forEach(n => n.remove());
+  form.querySelectorAll('.inp.bad').forEach(n => n.classList.remove('bad'));
+  if (el){ el.classList.add('bad'); const e = document.createElement('div'); e.className = 'err'; e.textContent = msg; (el.closest('.fld') || el.parentNode).appendChild(e); el.focus(); }
+  else toast(msg, true);
+  return false;
+}
+const num = v => (v === '' || v == null) ? null : Number(v);
+const FORMS = {
+  team(form){
+    const v = formVals(form); const code = (v.code || '').trim();
+    if (!TEAM_RE.test(code)) return fail(form, 'code', 'الرمز لازم يكون 8 أحرف أو أرقام على الأقل، بالإنجليزي.');
+    lsSet(LS_TEAM, code); location.reload();
+  },
+  async 'first-member'(form){
+    const v = formVals(form);
+    if (v.name.length < 2) return fail(form, 'name', 'اكتب اسمك (حرفين على الأقل).');
+    const ctx = getD();
+    const id = genId('m');
+    const role = ctx.members.length ? v.role : 'supervisor';
+    const ok = await guarded(async () => {
+      await putDoc('members', id, {name: v.name, role, color: MEMBER_COLORS[ctx.members.length % MEMBER_COLORS.length], createdAt: Date.now()});
+    });
+    if (!ok) return;
+    S.me = id; await logAct('member_add', {title: v.name, refId: id});
+    chooseMe(id);
+    toast('أهلًا ' + v.name + '، حياك في مِرْكاب.');
+  },
+  async maint(form, wrap){
+    const v = formVals(form); const ctx = getD();
+    if (!v.busId || !ctx.busById[v.busId]) return fail(form, 'busId', 'اختر الباص.');
+    if (!v.type) return fail(form, 'type', 'اختر نوع العملية.');
+    if (!v.date) return fail(form, 'date', 'اختر التاريخ.');
+    if (v.date > ctx.t) return fail(form, 'date', 'التاريخ ما يصير في المستقبل.');
+    const km = num(v.km), cost = num(v.cost);
+    if (km != null && (isNaN(km) || km < 0)) return fail(form, 'km', 'رقم العداد غير صحيح.');
+    if (v.type === 'oil' && !km) return fail(form, 'km', 'اكتب قراءة العداد عشان يتحدث ممشى الباص ويتحسب موعد الزيت الجاي.');
+    if (km && !v.id){
+      const cur = busKmExcept(v.busId, null);
+      const lastDate = S.data.records.filter(r => r.busId === v.busId && !r.archived && Number(r.km) === cur).map(r => r.date).sort().pop() || '';
+      if (km < cur && v.date >= lastDate) return fail(form, 'km', 'القراءة أقل من آخر قراءة مسجلة (' + fmtN(cur) + ' كم). تأكد من الرقم.');
+    }
+    if (cost != null && (isNaN(cost) || cost < 0)) return fail(form, 'cost', 'التكلفة غير صحيحة.');
+    const by = isSup() ? (v.by || S.me) : (v.id ? (S.data.records.find(r => r.id === v.id) || {}).by || S.me : S.me);
+    const data = {busId: v.busId, type: v.type, desc: v.desc || '', date: v.date, km: km || 0, cost: cost || 0, by, notes: v.notes || ''};
+    const pending = wrap._pending || [];
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+    let id = v.id, newKm = null;
+    const ok = await guarded(async () => {
+      if (id){
+        const old = S.data.records.find(r => r.id === id);
+        await patchDoc('records', id, Object.assign(data, {updatedAt: Date.now(), updatedBy: S.me, attachN: (old.attachN || 0) + pending.length}));
+        await logAct('maint_edit', {busId: data.busId, refId: id, type: data.type});
+      } else {
+        id = genId('r');
+        await putDoc('records', id, Object.assign(data, {createdAt: Date.now(), createdBy: S.me, attachN: pending.length}));
+        await logAct('maint_add', {busId: data.busId, refId: id, type: data.type, by});
+      }
+      if (pending.length) await saveFiles(pending, {parentType:'record', parentId:id, busId:data.busId});
+      newKm = await syncBusKm(data.busId, id, data.km);
+    });
+    btn.disabled = false;
+    if (ok){
+      closeModal();
+      if (data.type === 'oil' && newKm){
+        const sc = oilSched(getD().busById[data.busId]);
+        let msg = 'تم تسجيل تغيير الزيت. ممشى الباص صار ' + fmtN(newKm) + ' كم';
+        if (sc && Number(sc.km)) msg += '، والزيت الجاي عند ' + fmtN(data.km + Number(sc.km)) + ' كم';
+        if (sc && Number(sc.days)) msg += ' أو ' + fmtDate(addDays(data.date, Number(sc.days)));
+        toast(msg + '.');
+      } else toast(v.id ? 'تم حفظ التعديل.' : 'تم تسجيل العملية بنجاح.');
+    }
+  },
+  async note(form){
+    const v = formVals(form); const ctx = getD();
+    if (!v.desc || v.desc.length < 2) return fail(form, 'desc', 'اكتب الملاحظة.');
+    const ok = await guarded(async () => {
+      if (v.id){ await patchDoc('records', v.id, {desc: v.desc, busId: v.busId, updatedAt: Date.now(), updatedBy: S.me}); }
+      else {
+        const id = genId('r');
+        await putDoc('records', id, {busId: v.busId, type:'note', desc: v.desc, date: ctx.t, by: S.me, km:0, cost:0, notes:'', createdAt: Date.now(), createdBy: S.me});
+        await logAct('note_add', {busId: v.busId, refId: id, title: v.desc.slice(0, 80)});
+      }
+    });
+    if (ok){ closeModal(); toast('تم حفظ الملاحظة.'); }
+  },
+  async issue(form, wrap){
+    const v = formVals(form); const ctx = getD();
+    if (!v.busId || !ctx.busById[v.busId]) return fail(form, 'busId', 'اختر الباص.');
+    if (!v.title || v.title.length < 3) return fail(form, 'title', 'اكتب عنوان للمشكلة (3 أحرف على الأقل).');
+    const pending = wrap._pending || [];
+    let id = v.id;
+    const ok = await guarded(async () => {
+      if (id){
+        await patchDoc('issues', id, {busId: v.busId, title: v.title, desc: v.desc || '', severity: v.severity || 'normal', updatedAt: Date.now(), updatedBy: S.me});
+        await logAct('issue_edit', {busId: v.busId, refId: id, title: v.title});
+      } else {
+        id = genId('i'); const now = Date.now();
+        await putDoc('issues', id, {busId: v.busId, title: v.title, desc: v.desc || '', severity: v.severity || 'normal', status:'open', by: S.me, createdAt: now, updatedAt: now,
+          updates: [{at: now, by: S.me, status:'open', note:'أُضيفت المشكلة'}]});
+        await logAct('issue_add', {busId: v.busId, refId: id, title: v.title});
+      }
+      if (pending.length) await saveFiles(pending, {parentType:'issue', parentId:id, busId:v.busId});
+    });
+    if (ok){
+      closeModal();
+      toast(v.id ? 'تم حفظ التعديل.' : (v.severity === 'urgent' ? 'تمت إضافة المشكلة. هذا الباص يحتاج انتباه.' : 'تمت إضافة المشكلة.'));
+      if (v.id){ closeModal(); openIssue(id); }
+    }
+  },
+  async 'issue-update'(form){
+    const v = formVals(form);
+    const i = S.data.issues.find(x => x.id === v.id); if (!i) return;
+    if (v.status === i.status && v.severity === i.severity && !v.note) return fail(form, 'note', 'اكتب وش الجديد أو غيّر الحالة.');
+    const now = Date.now();
+    const ok = await guarded(async () => {
+      await patchDoc('issues', i.id, {status: v.status, severity: v.severity, updatedAt: now, updatedBy: S.me,
+        updates: (i.updates || []).concat([{at: now, by: S.me, status: v.status, note: v.note || ''}])});
+      await logAct('issue_update', {busId: i.busId, refId: i.id, title: i.title, status: v.status});
+    });
+    if (ok){ closeModal(); closeModal(); toast('تم تحديث المشكلة.'); openIssue(i.id); }
+  },
+  async 'issue-fix'(form){
+    const v = formVals(form); const ctx = getD();
+    const i = S.data.issues.find(x => x.id === v.id); if (!i) return;
+    if (!v.fixNotes || v.fixNotes.length < 3) return fail(form, 'fixNotes', 'اكتب وش اللي انعمل.');
+    if (!v.date || v.date > ctx.t) return fail(form, 'date', 'تاريخ الإصلاح غير صحيح.');
+    const cost = num(v.cost); if (cost != null && (isNaN(cost) || cost < 0)) return fail(form, 'cost', 'التكلفة غير صحيحة.');
+    const by = isSup() ? (v.by || S.me) : S.me;
+    const now = Date.now();
+    const ok = await guarded(async () => {
+      await patchDoc('issues', i.id, {status:'fixed', fixNotes: v.fixNotes, fixDate: v.date, cost: cost || 0, closedBy: by, closedAt: now, updatedAt: now, updatedBy: S.me,
+        updates: (i.updates || []).concat([{at: now, by, status:'fixed', note: v.fixNotes}])});
+      if (form.querySelector('#xf-rec').checked){
+        const rid = genId('r');
+        await putDoc('records', rid, {busId: i.busId, type: v.type || 'repair', desc: 'إصلاح: ' + i.title, notes: v.fixNotes, date: v.date, km: 0, cost: cost || 0, by, issueId: i.id, createdAt: now, createdBy: S.me});
+      }
+      await logAct('issue_fix', {busId: i.busId, refId: i.id, title: i.title, by});
+    });
+    if (ok){
+      closeModal(); closeModal();
+      const left = getD().info[i.busId];
+      toast(left && !left.open.length ? 'تم الإصلاح. الباص نظيف من المشاكل 👌' : 'تم إغلاق المشكلة بعد الإصلاح.');
+    }
+  },
+  async task(form){
+    const v = formVals(form);
+    if (!v.title || v.title.length < 3) return fail(form, 'title', 'اكتب المهمة (3 أحرف على الأقل).');
+    const ok = await guarded(async () => {
+      if (v.id){ await patchDoc('tasks', v.id, {title: v.title, busId: v.busId || '', due: v.due || '', priority: v.priority || 'normal', updatedAt: Date.now()}); }
+      else {
+        const id = genId('t');
+        await putDoc('tasks', id, {title: v.title, busId: v.busId || '', due: v.due || '', priority: v.priority || 'normal', done:false, createdAt: Date.now(), createdBy: S.me});
+        await logAct('task_add', {busId: v.busId || undefined, refId: id, title: v.title});
+      }
+    });
+    if (ok){ closeModal(); toast(v.id ? 'تم حفظ المهمة.' : 'تمت إضافة المهمة.'); }
+  },
+  async bus(form){
+    const v = formVals(form);
+    if (!v.name || v.name.length < 2) return fail(form, 'name', 'اكتب اسم الباص.');
+    const dup = S.data.buses.find(b => !b.archived && b.id !== v.id && norm(b.name) === norm(v.name));
+    if (dup) return fail(form, 'name', 'فيه باص بنفس الاسم.');
+    const year = num(v.year); if (year != null && (isNaN(year) || year < 1980 || year > 2035)) return fail(form, 'year', 'سنة الموديل غير صحيحة.');
+    const km = num(v.km); if (km != null && (isNaN(km) || km < 0)) return fail(form, 'km', 'رقم العداد غير صحيح.');
+    const schedules = SCHED_DEFAULT.map(d => ({key:d.key, type:d.type, label:d.label, critical:d.critical, enabled: !!form.querySelector('[name="sc-' + d.key + '-on"]').checked,
+      days: Math.max(1, parseInt(v['sc-' + d.key + '-days']) || d.days), km: Math.max(0, parseInt(v['sc-' + d.key + '-km']) || 0)}));
+    const data = {name: v.name, code: v.code || '', plate: v.plate || '', model: v.model || '', year: year || '', desc: v.desc || '', schedules};
+    const prevB = v.id ? S.data.buses.find(b => b.id === v.id) : null;
+    if (km != null && (!prevB || km !== (Number(prevB.km) || 0))){ data.km = km; data.kmManual = km; data.kmAt = Date.now(); } else if (!prevB){ data.km = 0; }
+    let id = v.id;
+    const ok = await guarded(async () => {
+      if (id){ await patchDoc('buses', id, Object.assign(data, {updatedAt: Date.now()})); await logAct('bus_edit', {busId: id, refId: id, title: v.name}); }
+      else { id = genId('b'); await putDoc('buses', id, Object.assign(data, {createdAt: Date.now(), createdBy: S.me})); await logAct('bus_add', {busId: id, refId: id, title: v.name}); }
+    });
+    if (ok){ closeModal(); toast(v.id ? 'تم حفظ بيانات الباص.' : 'تمت إضافة الباص.'); if (!v.id) go('bus-' + id); }
+  },
+  async odo(form){
+    const v = formVals(form); const km = num(v.km);
+    if (km == null || isNaN(km) || km <= 0) return fail(form, 'km', 'اكتب قراءة العداد.');
+    const cur = getD().info[v.busId].km;
+    if (km < cur) return fail(form, 'km', 'القراءة أقل من آخر قراءة مسجلة (' + fmtN(cur) + ' كم).');
+    const b = getD().busById[v.busId];
+    const ok = await guarded(async () => {
+      await patchDoc('buses', v.busId, {km, kmManual: km, kmAt: Date.now()});
+      await logAct('km_update', {busId: v.busId, refId: v.busId, title: b.name, km});
+    });
+    if (ok){ closeModal(); toast('تم تحديث الممشى إلى ' + fmtN(km) + ' كم.'); }
+  },
+  async member(form){
+    const v = formVals(form);
+    if (!v.name || v.name.length < 2) return fail(form, 'name', 'اكتب الاسم.');
+    const ctx = getD();
+    const ok = await guarded(async () => {
+      if (v.id){ const patch = {name: v.name}; if (isSup() && v.role) patch.role = v.role; await patchDoc('members', v.id, patch); await logAct('member_edit', {refId: v.id, title: v.name}); }
+      else { const id = genId('m'); await putDoc('members', id, {name: v.name, role: v.role || 'member', color: MEMBER_COLORS[S.data.members.length % MEMBER_COLORS.length], createdAt: Date.now()}); await logAct('member_add', {refId: id, title: v.name}); }
+    });
+    if (ok){ closeModal(); toast('تم الحفظ.'); }
+  }
+};
+
+/* =========================================================
+   Actions
+   ========================================================= */
+const ACTIONS = {
+  'new-team'(){ lsSet(LS_TEAM, newTeamCode()); location.reload(); },
+  'leave-team'(){ confirmBox('الخروج من الفريق؟', 'بيرجع يطلب منك رمز الفريق في هذا الجهاز. البيانات ما تنحذف.', 'خروج', true).then(ok => { if (ok){ lsSet(LS_TEAM, null); lsSet(LS_ME, null); location.reload(); } }); },
+  copy(d, el){
+    const text = d.v === 'code' ? S.team : inviteLink();
+    const done = () => toast(d.v === 'code' ? 'تم نسخ الرمز.' : 'تم نسخ رابط الدعوة. أرسله للفريق.');
+    const fallback = () => { const i = document.getElementById(d.v === 'code' ? 'set-code' : 'set-link'); if (i){ i.focus(); i.select(); } toast('اضغط مطوّل على الرابط وانسخه.'); };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch(e){ fallback(); }
+  },
+  async share(){
+    if (navigator.share){ try { await navigator.share({title:'مِرْكاب', text:'رابط مِرْكاب لمتابعة باصات الحلقة 🚍', url: inviteLink()}); } catch(e){} }
+    else ACTIONS.copy({v:'link'});
+  },
+  close(){ closeModal(); },
+  'close-go'(d, el, e){ closeAllModals(); },
+  go(d){ closeAllModals(); go(d.to); },
+  quick(){ openQuick(); },
+  more(){ openMore(); },
+  search(){ openSearch(); },
+  alerts(){ openAlerts(); },
+  'switch-user'(){ S.me = null; lsSet(LS_ME, null); closeAllModals(); render(); },
+  'choose-me'(d){ chooseMe(d.id); },
+  'first-member'(){ openModal(`${dlgHead('أضف نفسك')}<div class="dlg-b">${firstMemberForm(false)}</div>`, 'sm'); },
+  'add-maint'(d){ if (d.replace) closeModal(); openMaint({bus: d.bus, type: d.type || undefined}); },
+  'edit-maint'(d){ if (modalStack.length && $('#gs-q')) closeAllModals(); openMaint({id: d.id}); },
+  'add-issue'(d){ if (d.replace) closeModal(); openIssueForm({bus: d.bus}); },
+  'open-issue'(d){ if ($('#gs-q') || $('.alert-i')) closeAllModals(); openIssue(d.id); },
+  'edit-issue'(d){ openIssueForm({id: d.id}); },
+  'update-issue'(d){ openIssueUpdate(d.id); },
+  'fix-issue'(d){ openIssueFix(d.id); },
+  async 'reopen-issue'(d){
+    const i = S.data.issues.find(x => x.id === d.id); if (!i) return;
+    const now = Date.now();
+    const ok = await guarded(async () => {
+      await patchDoc('issues', i.id, {status:'open', updatedAt: now, updatedBy: S.me, updates: (i.updates || []).concat([{at: now, by: S.me, status:'open', note:'أُعيد فتح المشكلة'}])});
+      await logAct('issue_reopen', {busId: i.busId, refId: i.id, title: i.title});
+    });
+    if (ok){ closeModal(); toast('تمت إعادة فتح المشكلة.'); openIssue(i.id); }
+  },
+  'add-task'(){ openTask(); },
+  'edit-task'(d){ openTask(d.id); },
+  async 'toggle-task'(d, el, e){
+    const x = S.data.tasks.find(t => t.id === d.id); if (!x) return;
+    const done = !x.done;
+    await guarded(async () => {
+      await patchDoc('tasks', x.id, done ? {done:true, doneAt: Date.now(), doneBy: S.me} : {done:false, doneAt: 0, doneBy: ''});
+      await logAct(done ? 'task_done' : 'task_undo', {busId: x.busId || undefined, refId: x.id, title: x.title});
+    });
+    if (done) toast('تم إنجاز المهمة.');
+  },
+  'add-bus'(){ openBus(); },
+  odo(d){ openOdo(d.id); },
+  'edit-bus'(d){ openBus(d.id); },
+  'add-member'(){ openMember(); },
+  'edit-member'(d){ openMember(d.id); },
+  'bus-tab'(d){ S.ui.busTab = d.v; render(); },
+  'bus-filter'(d){ S.ui.busFilter = d.v; render(); },
+  'issue-filter'(d){ S.ui.issues.status = d.v; render(); },
+  'clear-filters'(d){ const f = S.ui[d.v]; Object.keys(f).forEach(k => f[k] = ''); render(); },
+  'filter-member'(d){ closeAllModals(); Object.keys(S.ui.log).forEach(k => S.ui.log[k] = ''); S.ui.log.by = d.id; go('log'); },
+  img(d){
+    const list = S.fileCache[d.key] || []; const f = list.find(x => x.id === d.id); if (!f) return;
+    openModal(`${dlgHead('صورة مرفقة', esc(timeAgo(f.at)) + ' · ' + esc(memberName(getD(), f.by)))}<div class="dlg-b lightbox"><img src="${f.data}" alt="صورة مرفقة"></div>`, 'lg');
+  },
+  async archive(d){
+    const labels = {records:'سجل الصيانة', issues:'المشكلة', tasks:'المهمة', buses:'الباص', members:'العضو'};
+    const ok = await confirmBox('أرشفة ' + labels[d.coll] + '؟', d.coll === 'buses' ? 'الباص وسجلاته تختفي من القوائم، لكن ما تنحذف. المشرف يقدر يستعيده من الإعدادات.' : 'ما راح ينحذف نهائيًا. يختفي من القوائم ويقدر المشرف يستعيده من الأرشيف.', 'أرشفة', true);
+    if (!ok) return;
+    const doc = (S.data[d.coll] || []).find(x => x.id === d.id); if (!doc) return;
+    const done = await guarded(async () => {
+      await patchDoc(d.coll, d.id, {archived:true, archivedAt: Date.now(), archivedBy: S.me});
+      if (d.coll === 'records' && doc.km) await syncBusKm(doc.busId, doc.id, 0);
+      const kind = {records: doc.type === 'note' ? 'maint_archive' : 'maint_archive', issues:'issue_archive', tasks:'task_archive', buses:'bus_archive', members:'member_archive'}[d.coll];
+      await logAct(kind, {busId: doc.busId || (d.coll === 'buses' ? doc.id : undefined), refId: doc.id, title: doc.title || doc.name || '', type: doc.type});
+    });
+    if (done){ closeAllModals(); toast('تمت الأرشفة.'); if (d.coll === 'buses') go('buses'); }
+  },
+  async restore(d){
+    if (!isSup()){ toast('الاستعادة للمشرف فقط.', true); return; }
+    const doc = (S.data[d.coll] || []).find(x => x.id === d.id); if (!doc) return;
+    const ok = await guarded(async () => {
+      await patchDoc(d.coll, d.id, {archived:false, archivedAt:0});
+      const kind = {records:'maint_restore', issues:'issue_restore', buses:'bus_restore', tasks:'task_add', members:'member_edit'}[d.coll];
+      await logAct(kind, {busId: doc.busId || (d.coll === 'buses' ? doc.id : undefined), refId: doc.id, title: doc.title || doc.name || '', type: doc.type});
+    });
+    if (ok) toast('تمت الاستعادة.');
+  },
+  async 'clear-demo'(){
+    if (!isSup()) return;
+    const ok = await confirmBox('حذف البيانات التجريبية؟', 'بنحذف الباصات والعمليات والمشاكل والمهام التجريبية نهائيًا. أسماء الفريق تبقى، وأي شي سجلتوه أنتم ما يتأثر.', 'حذف التجريبي', true);
+    if (!ok) return;
+    const done = await guarded(async () => {
+      for (const k of ['activity','records','issues','tasks','buses']){
+        for (const x of S.data[k].filter(y => y.demo)){ await delDoc(k, x.id); }
+      }
+    });
+    if (done) toast('انحذفت البيانات التجريبية. ابدأ بإضافة باصاتكم.');
+  }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act;
+  const fn = ACTIONS[act];
+  if (!fn) return;
+  if (el.tagName === 'A' && act === 'close-go'){ closeAllModals(); return; }
+  if (el.type === 'checkbox'){ e.preventDefault(); }
+  else if (el.tagName !== 'A') e.preventDefault();
+  fn(el.dataset, el, e);
+});
+document.addEventListener('submit', e => {
+  const form = e.target.closest('[data-form]');
+  if (!form) return;
+  e.preventDefault();
+  const fn = FORMS[form.dataset.form];
+  if (fn) fn(form, form.closest('.modal') || form);
+});
+// live search fields in views
+let inputT = null;
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.input){
+    const path = el.dataset.input.split('.');
+    if (path.length === 1) S.ui[path[0]] = el.value; else S.ui[path[0]][path[1]] = el.value;
+    clearTimeout(inputT); inputT = setTimeout(render, 140);
+  }
+  if (el.classList && el.classList.contains('bad')){ el.classList.remove('bad'); const er = el.closest('.fld') && el.closest('.fld').querySelector('.err'); if (er) er.remove(); }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.filter){
+    const [a, b] = el.dataset.filter.split('.');
+    S.ui[a][b] = el.value; render();
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalStack.length){ e.preventDefault(); closeModal(); }
+  if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !modalStack.length)){
+    if (!$('#shell').hidden){ e.preventDefault(); openSearch(); }
+  }
+});
+window.addEventListener('hashchange', () => { closeAllModals(); render(); });
+// refresh relative times every minute
+setInterval(() => { if (!modalStack.length && !document.hidden) render(); }, 60000);
+
+/* =========================================================
+   Boot
+   ========================================================= */
+function showGate(html){
+  $('#boot').hidden = true; $('#shell').hidden = true;
+  const el = $('#login'); el.hidden = false; el.className = 'login';
+  el.innerHTML = `<div class="login-inner"><div class="login-brand"><span class="emoji" aria-hidden="true">🚍</span><h1>مِرْكاب</h1><p class="tag">خلّ الباصات علينا.</p><div class="road" aria-hidden="true"></div></div>${html}</div><p class="login-foot">مِرْكاب — كل باص، وكل تفاصيله، في مكان واحد.</p>`;
+}
+function showTeamGate(){
+  showGate(`<h2>رمز الفريق</h2>
+    <form class="panel box" data-form="team" style="display:grid;gap:12px" novalidate>
+      <div class="fld"><label for="tm-code">اكتب رمز الفريق اللي وصلك</label><input class="inp ltr" id="tm-code" name="code" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="mk-xxxxxxxxx" required></div>
+      <button class="btn primary" type="submit">دخول</button>
+    </form>
+    <p class="small muted" style="margin-top:14px">أسهل طريقة: افتح «رابط الدعوة» اللي أرسله لك المشرف، ويدخلك على طول.</p>
+    <p class="small muted" style="margin-top:6px">أول مرة تبدأ مِرْكاب لفريقك؟ <button type="button" class="link" data-act="new-team">أنشئ فريق جديد</button></p>`);
+}
+(async function boot(){
+  const t0 = Date.now();
+  await initStore();
+  if (S.mode === 'nocfg'){ showGate('<div class="panel box"><b>مِرْكاب يحتاج ربط بقاعدة البيانات.</b><p class="small muted" style="margin-top:6px">ملف الإعداد ناقص. تواصل مع اللي جهّز الموقع.</p></div>'); return; }
+  if (S.mode === 'noteam'){ showTeamGate(); return; }
+  let meId = lsGet(LS_ME, null);
+  if (S.mode === 'db' && S.uid){
+    try { const p = await db.doc('data/users/' + S.uid + '/profile').get(); if (p.exists && p.data().memberId) meId = p.data().memberId; } catch(e){}
+  }
+  S.me = meId;
+  const wait = Math.max(0, 700 - (Date.now() - t0));
+  setTimeout(() => { S.booted = true; dataVer++; render(); }, wait);
+})();
+})();
+</script>
+
+</body>
+</html>
