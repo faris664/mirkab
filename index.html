@@ -1024,7 +1024,7 @@ function render(){
   if (S.mode === 'loading' || !S.booted) return;
   const ctx = getD();
   const meM = ctx.memberById[S.me];
-  if (!meM || meM.archived || (meM.pinHash && meM.pinHash !== S.meH)){ if (S.me && meM && meM.pinHash !== S.meH){ S.me = null; lsSet(LS_ME, null); } showLogin(ctx); return; }
+  if (!meM || meM.archived){ showLogin(ctx); return; }
   $('#login').dataset.mode = '';
   if (!meM.pinHash && !S.pinPrompted){ S.pinPrompted = true; setTimeout(openMyPin, 400); }
   $('#boot').hidden = true; $('#login').hidden = true; $('#shell').hidden = false;
