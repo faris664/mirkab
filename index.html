@@ -1576,7 +1576,7 @@ async function uniquePin(){
   }
   return '';
 }
-async function pinTaken(h, exceptId){ return S.data.members.some(m => !m.archived && m.id !== exceptId && m.pinHash === h); }
+async function pinTaken(h, exceptId){ return false; }
 function pinField(id, label, opts = {}){
   return `<div class="fld"><label for="${id}">${label}${opts.opt ? ` <span class="opt">${opts.opt}</span>` : ''}</label>
     <div style="display:flex;gap:8px"><input class="inp ltr pin-in" id="${id}" name="${opts.name || 'pin'}" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" ${opts.required ? 'required' : ''} value="${esc(opts.value || '')}" placeholder="${esc(opts.placeholder || '••••')}" ${opts.autofocus ? 'autofocus' : ''}>
@@ -2037,7 +2037,14 @@ const FORMS = {
     if (S.pinLockUntil && Date.now() < S.pinLockUntil) return fail(form, 'pin', 'محاولات كثيرة. انتظر ' + Math.ceil((S.pinLockUntil - Date.now()) / 1000) + ' ثانية وحاول مرة ثانية.');
     if (!PIN_RE.test(v.pin || '')) return fail(form, 'pin', 'رقم الدخول من 4 إلى 6 أرقام.');
     const h = await pinHash(v.pin);
-    const m = ctx.members.find(x => x.pinHash === h);
+    const matches = ctx.members.filter(x => x.pinHash === h);
+    if (matches.length > 1){
+      S.pinFails = 0;
+      const host = form.parentNode;
+      form.outerHTML = `<div class="panel box" style="display:grid;gap:10px"><b>مين أنت؟</b><div class="who">${matches.map(x => `<button type="button" data-act="pick-me" data-id="${esc(x.id)}" data-h="${esc(h)}">${avatar(ctx, x.id, 'lg')}<span><span class="nm">${esc(x.name)}</span><br><span class="rl">${ROLES[x.role] || ''}</span></span><span class="go">${icon('fwd')}</span></button>`).join('')}</div></div>`;
+      return;
+    }
+    const m = matches[0];
     if (!m){
       S.pinFails = (S.pinFails || 0) + 1;
       if (S.pinFails >= 5){ S.pinFails = 0; S.pinLockUntil = Date.now() + 30000; }
@@ -2326,6 +2333,7 @@ const ACTIONS = {
   odo(d){ openOdo(d.id); },
   'edit-bus'(d){ openBus(d.id); },
   'add-member'(){ openMember(); },
+  'pick-me'(d){ const m = getD().memberById[d.id]; if (!m || m.pinHash !== d.h) return; $('#login').dataset.mode = ''; chooseMe(m.id, d.h); toast('أهلًا ' + m.name + ' 👋'); },
   async 'gen-pin'(d){ const i = document.getElementById(d.for); if (i){ i.value = await uniquePin(); i.dispatchEvent(new Event('input', {bubbles:true})); } },
   'copy-pin'(d){ try { navigator.clipboard.writeText(d.v).then(() => toast('تم نسخ الرقم.'), () => toast('حدّد الرقم وانسخه يدويًا.')); } catch(e){ toast('حدّد الرقم وانسخه يدويًا.'); } },
   'edit-member'(d){ openMember(d.id); },
